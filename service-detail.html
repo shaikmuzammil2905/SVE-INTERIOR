@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Details | SVE Elegant Interiors</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="preloader"><div class="loader-spinner"></div></div>
+  <div id="scroll-progress"></div>
+
+  <!-- Navbar -->
+  <header>
+    <nav class="navbar scrolled">
+      <div class="container nav-container">
+        <a href="index.html" class="brand-logo">
+          <div class="brand-title">SVE <span>ELEGANT INTERIORS</span></div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="services.html" class="nav-link active">Services</a></li>
+          <li><a href="projects.html" class="nav-link">Projects</a></li>
+          <li><a href="why-choose-us.html" class="nav-link">Why Choose Us</a></li>
+          <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <button class="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Dynamic Content Container injected by JS -->
+  <div id="dynamic-service-content" style="padding-top: 80px;"></div>
+
+  <!-- Quick Consultation Booking Section -->
+  <section class="contact-section" id="contact" style="padding-top: 40px;">
+    <div class="container contact-grid">
+      <div class="contact-info-card">
+        <div>
+          <span class="section-tag" style="color: var(--accent-gold-light);">Request Consultation</span>
+          <h2 style="color: white; font-size: 1.8rem;">Schedule Your Free Site Visit</h2>
+          <p style="color: rgba(255,255,255,0.85); margin-top: 10px;">Our interior design experts will assess your space, provide 3D layout options, and give you an exact transparent cost estimate.</p>
+        </div>
+        <div>
+          <p><i class="fas fa-phone-alt" style="color: var(--accent-gold);"></i> Call Directly: <strong>+91 9100097311</strong></p>
+        </div>
+      </div>
+
+      <div class="contact-form-card">
+        <h3>Book Service Consultation</h3>
+        <form id="whatsapp-contact-form">
+          <div class="form-grid">
+            <div class="form-group"><label>Full Name *</label><input type="text" name="name" class="form-control" required></div>
+            <div class="form-group"><label>Phone Number *</label><input type="tel" name="phone" class="form-control" required></div>
+            <div class="form-group"><label>Email</label><input type="email" name="email" class="form-control"></div>
+            <div class="form-group"><label>Service Selected</label>
+              <select name="service" class="form-control">
+                <option value="Interior Design">Interior Design</option>
+                <option value="Modular Kitchens">Modular Kitchens</option>
+                <option value="Wardrobes">Wardrobes</option>
+                <option value="Home Painting">Home Painting</option>
+                <option value="Custom Furniture">Custom Furniture</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Property Type</label><select name="property_type" class="form-control"><option value="Apartment">Apartment</option><option value="Villa">Villa</option></select></div>
+            <div class="form-group"><label>Preferred Date</label><input type="date" name="preferred_date" class="form-control"></div>
+            <div class="form-group full-width"><label>Address</label><input type="text" name="address" class="form-control"></div>
+            <div class="form-group full-width"><label>Message</label><textarea name="message" rows="2" class="form-control"></textarea></div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;"><i class="fab fa-whatsapp"></i> Send Details via WhatsApp</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-bottom">
+      <div>© 2026 SVE Elegant Interiors. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

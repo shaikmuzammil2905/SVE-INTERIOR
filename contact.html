@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | SVE Elegant Interiors</title>
+  <meta name="description" content="Get in touch with SVE Elegant Interiors. Call 9100097311 or visit our office near Venkateswara Temple, Quthubullapur, Medchal.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="preloader"><div class="loader-spinner"></div></div>
+  <div id="scroll-progress"></div>
+
+  <header>
+    <nav class="navbar scrolled">
+      <div class="container nav-container">
+        <a href="index.html" class="brand-logo"><div class="brand-title">SVE <span>ELEGANT INTERIORS</span></div></a>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="services.html" class="nav-link">Services</a></li>
+          <li><a href="projects.html" class="nav-link">Projects</a></li>
+          <li><a href="why-choose-us.html" class="nav-link">Why Choose Us</a></li>
+          <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li><a href="contact.html" class="nav-link active">Contact</a></li>
+        </ul>
+        <button class="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </nav>
+  </header>
+
+  <section style="padding: 140px 0 60px; background: linear-gradient(135deg, var(--primary-teal-dark), var(--primary-teal)); color: white; text-align: center;">
+    <div class="container">
+      <span class="section-tag" style="color: var(--accent-gold-light);">Connect With Us</span>
+      <h1 style="font-size: 3rem; color: white; margin-top: 10px;">Contact SVE Elegant Interiors</h1>
+    </div>
+  </section>
+
+  <section class="contact-section">
+    <div class="container contact-grid">
+      <div class="contact-info-card">
+        <div>
+          <span class="section-tag" style="color: var(--accent-gold-light);">Reach Out</span>
+          <h2 style="color: white; font-size: 2rem; margin-top: 8px;">Our Office & Details</h2>
+        </div>
+
+        <div class="contact-detail-item">
+          <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+          <div class="contact-text">
+            <h4>Phone Number</h4>
+            <a href="tel:9100097311">+91 9100097311</a>
+          </div>
+        </div>
+
+        <div class="contact-detail-item">
+          <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+          <div class="contact-text">
+            <h4>Email Address</h4>
+            <a href="mailto:info@svelegantinteriors.com">info@svelegantinteriors.com</a>
+            <br>
+            <button id="copy-email-btn" class="btn" style="padding: 4px 10px; font-size: 0.75rem; margin-top: 8px; background: rgba(255,255,255,0.15); color: #fff;"><i class="far fa-copy"></i> Copy Email</button>
+          </div>
+        </div>
+
+        <div class="contact-detail-item">
+          <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div class="contact-text">
+            <h4>Office Address</h4>
+            <p>Near Venkateswara Temple, Mahadevpuram, Raavinarayana Reddy Nagar, Devender Nagar, Quthubullapur, Medchal, Telangana 500055</p>
+            <a href="https://maps.app.goo.gl/gkEwfNyeMemnVQb56?g_st=ac" target="_blank" style="color: var(--accent-gold-light); font-weight: bold; display: inline-block; margin-top: 8px;">Open in Google Maps <i class="fas fa-external-link-alt"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form-card">
+        <h3 style="font-size: 1.5rem; margin-bottom: 20px;">Send Us A Direct Message</h3>
+        <form id="whatsapp-contact-form">
+          <div class="form-grid">
+            <div class="form-group"><label>Full Name *</label><input type="text" name="name" class="form-control" placeholder="Your Name" required></div>
+            <div class="form-group"><label>Phone Number *</label><input type="tel" name="phone" class="form-control" placeholder="9100097311" required></div>
+            <div class="form-group"><label>Email Address</label><input type="email" name="email" class="form-control" placeholder="name@example.com"></div>
+            <div class="form-group"><label>Service Required *</label>
+              <select name="service" class="form-control">
+                <option value="Interior Design">Interior Design</option>
+                <option value="Home Interiors">Home Interiors</option>
+                <option value="Modular Kitchens">Modular Kitchens</option>
+                <option value="Wardrobes">Wardrobes</option>
+                <option value="Home Painting">Home Painting</option>
+                <option value="Custom Furniture">Custom Furniture</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Property Type</label><select name="property_type" class="form-control"><option value="Apartment">Apartment</option><option value="Villa">Villa</option><option value="Commercial">Commercial</option></select></div>
+            <div class="form-group"><label>Preferred Date</label><input type="date" name="preferred_date" class="form-control"></div>
+            <div class="form-group full-width"><label>Address</label><input type="text" name="address" class="form-control" placeholder="Project location address"></div>
+            <div class="form-group full-width"><label>Message</label><textarea name="message" rows="3" class="form-control" placeholder="Provide additional details..."></textarea></div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;"><i class="fab fa-whatsapp"></i> Send Lead via WhatsApp</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="map-section">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.029841804368!2d78.4720!3d17.5140!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb9074092b3a8d%3A0x86161405b0b2e88a!2sQuthbullapur%2C%20Hyderabad%2C%20Telangana%20500055!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-bottom">
+      <div>© 2026 SVE Elegant Interiors. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

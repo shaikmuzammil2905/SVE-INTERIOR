@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects Portfolio | SVE Elegant Interiors</title>
+  <meta name="description" content="Explore our featured residential and commercial interior design & painting projects across Hyderabad and Telangana.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="preloader"><div class="loader-spinner"></div></div>
+  <div id="scroll-progress"></div>
+
+  <header>
+    <nav class="navbar scrolled">
+      <div class="container nav-container">
+        <a href="index.html" class="brand-logo"><div class="brand-title">SVE <span>ELEGANT INTERIORS</span></div></a>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="services.html" class="nav-link">Services</a></li>
+          <li><a href="projects.html" class="nav-link active">Projects</a></li>
+          <li><a href="why-choose-us.html" class="nav-link">Why Choose Us</a></li>
+          <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+        <button class="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </nav>
+  </header>
+
+  <section style="padding: 140px 0 60px; background: linear-gradient(135deg, var(--primary-teal-dark), var(--primary-teal)); color: white; text-align: center;">
+    <div class="container">
+      <span class="section-tag" style="color: var(--accent-gold-light);">Our Showcase</span>
+      <h1 style="font-size: 3rem; color: white; margin-top: 10px;">Turnkey Projects Portfolio</h1>
+    </div>
+  </section>
+
+  <section class="projects-section">
+    <div class="container">
+      <div class="filter-tabs">
+        <button class="filter-btn active" data-filter="all">All Projects</button>
+        <button class="filter-btn" data-filter="home">Home</button>
+        <button class="filter-btn" data-filter="kitchen">Kitchen</button>
+        <button class="filter-btn" data-filter="bedroom">Bedroom</button>
+        <button class="filter-btn" data-filter="office">Office</button>
+        <button class="filter-btn" data-filter="painting">Painting</button>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="project-card" data-category="home" data-date="Dec 2025" data-location="Jubilee Hills, Hyderabad" data-type="Luxury Villa" data-desc="Double-height living area with custom Italian marble backdrops, warm cove illumination, and modular sofas.">
+          <img src="assets/images/hero1.png" alt="Luxury Living Room Project">
+          <div class="project-overlay"><span class="project-category">Home Interior</span><h3 class="project-title">Jubilee Hills Villa</h3></div>
+        </div>
+
+        <div class="project-card" data-category="kitchen" data-date="Jan 2026" data-location="Gachibowli, Hyderabad" data-type="Modular Kitchen" data-desc="Handle-less luxury quartz modular kitchen with integrated breakfast counter and soft-close drawers.">
+          <img src="assets/images/hero2.png" alt="Modular Kitchen Project">
+          <div class="project-overlay"><span class="project-category">Kitchen</span><h3 class="project-title">Gachibowli Kitchen</h3></div>
+        </div>
+
+        <div class="project-card" data-category="bedroom" data-date="Nov 2025" data-location="Banjara Hills, Hyderabad" data-type="Master Suite" data-desc="Plush master suite bedroom with warm ambient architectural lighting and glass wardrobe doors.">
+          <img src="assets/images/hero3.png" alt="Master Suite Bedroom Project">
+          <div class="project-overlay"><span class="project-category">Bedroom</span><h3 class="project-title">Banjara Master Suite</h3></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-overlay" id="project-modal">
+    <div class="modal-container">
+      <button class="modal-close">&times;</button>
+      <div class="modal-image-wrapper"><img src="" alt="Project Preview" class="modal-img"></div>
+      <div class="modal-meta-grid">
+        <div class="meta-item"><strong>Category</strong><span class="modal-cat"></span></div>
+        <div class="meta-item"><strong>Completion Date</strong><span class="modal-date"></span></div>
+        <div class="meta-item"><strong>Location</strong><span class="modal-loc"></span></div>
+        <div class="meta-item"><strong>Project Type</strong><span class="modal-type"></span></div>
+      </div>
+      <h3 class="modal-title" style="font-size: 1.5rem; margin-bottom: 10px;"></h3>
+      <p class="modal-desc" style="color: var(--text-muted);"></p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-bottom">
+      <div>© 2026 SVE Elegant Interiors. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
