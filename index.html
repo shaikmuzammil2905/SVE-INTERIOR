@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Master Stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1.1">
 
   <!-- Schema.org JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -302,55 +302,18 @@
         <p class="section-subtitle" style="margin: 0 auto;">Explore our recently completed residential & commercial interior projects.</p>
       </div>
 
-      <div class="filter-tabs">
-        <button class="filter-btn active" data-filter="all">All Projects</button>
-        <button class="filter-btn" data-filter="home">Home</button>
-        <button class="filter-btn" data-filter="kitchen">Kitchen</button>
-        <button class="filter-btn" data-filter="bedroom">Bedroom</button>
-        <button class="filter-btn" data-filter="office">Office</button>
-        <button class="filter-btn" data-filter="painting">Painting</button>
+      <div class="category-filter-tabs">
+        <button class="index-filter-btn active" data-category-filter="all"><i class="fas fa-th"></i> All Projects (61)</button>
+        <button class="index-filter-btn" data-category-filter="modular-kitchens"><i class="fas fa-utensils"></i> Modular Kitchens</button>
+        <button class="index-filter-btn" data-category-filter="wardrobes"><i class="fas fa-bed"></i> Bedrooms & Wardrobes</button>
+        <button class="index-filter-btn" data-category-filter="tv-units"><i class="fas fa-tv"></i> Living & TV Units</button>
+        <button class="index-filter-btn" data-category-filter="false-ceiling"><i class="fas fa-lightbulb"></i> Ceilings & Lighting</button>
+        <button class="index-filter-btn" data-category-filter="office-interiors"><i class="fas fa-briefcase"></i> Office & Commercial</button>
+        <button class="index-filter-btn" data-category-filter="home-painting"><i class="fas fa-paint-roller"></i> Painting & Execution</button>
       </div>
 
-      <div class="gallery-grid">
-        <div class="project-card" data-category="home" data-date="Dec 2025" data-location="Jubilee Hills, Hyderabad" data-type="Luxury Villa" data-desc="Grand double-height living room featuring custom marble wall paneling and Italian leather seating.">
-          <img src="assets/images/hero1.png" alt="Luxury Living Room Project" loading="lazy">
-          <div class="project-overlay">
-            <span class="project-category">Home Interior</span>
-            <h3 class="project-title">Jubilee Hills Villa</h3>
-          </div>
-        </div>
-
-        <div class="project-card" data-category="kitchen" data-date="Jan 2026" data-location="Gachibowli, Hyderabad" data-type="Modular Kitchen" data-desc="Modern handle-less modular kitchen with smart quartz countertop and integrated breakfast bar.">
-          <img src="assets/images/hero2.png" alt="Modular Kitchen Project" loading="lazy">
-          <div class="project-overlay">
-            <span class="project-category">Kitchen</span>
-            <h3 class="project-title">Gachibowli Quartz Kitchen</h3>
-          </div>
-        </div>
-
-        <div class="project-card" data-category="bedroom" data-date="Nov 2025" data-location="Banjara Hills, Hyderabad" data-type="Master Suite" data-desc="Sophisticated master suite featuring warm cove ceiling lighting, wooden floorboards, and glass wardrobe.">
-          <img src="assets/images/hero3.png" alt="Master Suite Bedroom Project" loading="lazy">
-          <div class="project-overlay">
-            <span class="project-category">Bedroom</span>
-            <h3 class="project-title">Banjara Master Suite</h3>
-          </div>
-        </div>
-
-        <div class="project-card" data-category="office" data-date="Jan 2026" data-location="HITEC City, Hyderabad" data-type="Corporate Office" data-desc="Modern executive corporate office design featuring acoustic glass wall partitions and ergonomic wooden workstations.">
-          <img src="assets/images/office.png" alt="Corporate Office Interior Project" loading="lazy">
-          <div class="project-overlay">
-            <span class="project-category">Office</span>
-            <h3 class="project-title">HITEC City Corporate Suite</h3>
-          </div>
-        </div>
-
-        <div class="project-card" data-category="painting" data-date="Feb 2026" data-location="Kondapur, Hyderabad" data-type="Royal Home Painting" data-desc="Dust-free luxury interior wall painting with washable royal emulsion and hand-crafted metallic accent walls.">
-          <img src="assets/images/painting.png" alt="Home Painting Service Project" loading="lazy">
-          <div class="project-overlay">
-            <span class="project-category">Painting</span>
-            <h3 class="project-title">Kondapur Luxury Residence</h3>
-          </div>
-        </div>
+      <div class="gallery-grid" id="index-projects-gallery">
+        <!-- Rendered dynamically by js/main.js -->
       </div>
     </div>
   </section>
@@ -599,6 +562,6 @@
   </div>
 
   <!-- Main JavaScript File -->
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=1.1"></script>
 </body>
 </html>

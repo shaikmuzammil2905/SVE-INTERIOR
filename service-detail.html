@@ -6,7 +6,7 @@
   <title>Service Details | SVE Elegant Interiors</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1.1">
 </head>
 <body>
 
@@ -80,11 +80,86 @@
 
   <!-- Footer -->
   <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand-logo" style="margin-bottom: 16px; display: inline-block;">
+          <img src="assets/images/logo.png" alt="SVE Elegant Interiors Logo" style="height: 56px; width: auto; object-fit: contain; filter: brightness(0) invert(1);">
+        </a>
+        <p>SVE Elegant Interiors is a premier interior design and professional home painting company. We build elegant, functional, and timeless luxury spaces.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="services.html">Our Services</a></li>
+          <li><a href="projects.html">Featured Projects</a></li>
+          <li><a href="why-choose-us.html">Why Choose Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Top Services</h4>
+        <ul class="footer-links">
+          <li><a href="service-detail.html?id=interior-design">Interior Design</a></li>
+          <li><a href="service-detail.html?id=modular-kitchens">Modular Kitchens</a></li>
+          <li><a href="service-detail.html?id=wardrobes">Custom Wardrobes</a></li>
+          <li><a href="service-detail.html?id=home-painting">Home Painting</a></li>
+          <li><a href="service-detail.html?id=false-ceiling">False Ceilings</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <p style="margin-bottom: 8px;"><i class="fas fa-phone-alt" style="color: var(--accent-gold);"></i> +91 9100097311</p>
+        <p style="margin-bottom: 8px;"><i class="fas fa-envelope" style="color: var(--accent-gold);"></i> info@svelegantinteriors.com</p>
+        <p style="font-size: 0.85rem;"><i class="fas fa-map-marker-alt" style="color: var(--accent-gold);"></i> Quthubullapur, Medchal, Telangana 500055</p>
+      </div>
+    </div>
+
     <div class="container footer-bottom">
       <div>© 2026 SVE Elegant Interiors. All Rights Reserved.</div>
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
+  <!-- Floating Action Buttons -->
+  <div class="floating-actions">
+    <a href="https://wa.me/919100097311?text=Hi%20SVE%20Elegant%20Interiors%2C%20I%20would%20like%20to%20get%20a%20quote%20for%20my%20space." target="_blank" class="float-btn whatsapp" title="Chat on WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+      <div class="pulse-ring"></div>
+    </a>
+    <a href="tel:9100097311" class="float-btn call" title="Call Us Now">
+      <i class="fas fa-phone-alt"></i>
+    </a>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" title="Back to Top"><i class="fas fa-arrow-up"></i></button>
+
+  <!-- Mobile Bottom Sticky Quick Bar -->
+  <div class="mobile-bottom-bar">
+    <div class="mobile-bottom-nav">
+      <a href="tel:9100097311" class="mobile-nav-item">
+        <i class="fas fa-phone-alt"></i>
+        <span>Call Now</span>
+      </a>
+      <a href="https://wa.me/919100097311" target="_blank" class="mobile-nav-item">
+        <i class="fab fa-whatsapp"></i>
+        <span>WhatsApp</span>
+      </a>
+      <a href="mailto:info@svelegantinteriors.com" class="mobile-nav-item">
+        <i class="fas fa-envelope"></i>
+        <span>Email Us</span>
+      </a>
+      <a href="https://maps.app.goo.gl/gkEwfNyeMemnVQb56?g_st=ac" target="_blank" class="mobile-nav-item">
+        <i class="fas fa-directions"></i>
+        <span>Get Direction</span>
+      </a>
+    </div>
+  </div>
+
+  <script src="js/main.js?v=1.1"></script>
 </body>
 </html>

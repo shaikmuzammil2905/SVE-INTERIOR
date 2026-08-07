@@ -7,7 +7,7 @@
   <meta name="description" content="Explore our featured residential and commercial interior design & painting projects across Hyderabad and Telangana.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1.1">
 </head>
 <body>
   <div id="preloader"><div class="loader-spinner"></div></div>
@@ -38,42 +38,20 @@
     </div>
   </section>
 
-  <section class="projects-section">
+  <section class="projects-section" style="background-color: var(--bg-cream); padding: 80px 0;">
     <div class="container">
-      <div class="filter-tabs">
-        <button class="filter-btn active" data-filter="all">All Projects</button>
-        <button class="filter-btn" data-filter="home">Home</button>
-        <button class="filter-btn" data-filter="kitchen">Kitchen</button>
-        <button class="filter-btn" data-filter="bedroom">Bedroom</button>
-        <button class="filter-btn" data-filter="office">Office</button>
-        <button class="filter-btn" data-filter="painting">Painting</button>
+      <div class="category-filter-tabs">
+        <button class="project-filter-btn active" data-category-filter="all"><i class="fas fa-th"></i> All Projects (61)</button>
+        <button class="project-filter-btn" data-category-filter="modular-kitchens"><i class="fas fa-utensils"></i> Modular Kitchens</button>
+        <button class="project-filter-btn" data-category-filter="wardrobes"><i class="fas fa-bed"></i> Bedrooms & Wardrobes</button>
+        <button class="project-filter-btn" data-category-filter="tv-units"><i class="fas fa-tv"></i> Living & TV Units</button>
+        <button class="project-filter-btn" data-category-filter="false-ceiling"><i class="fas fa-lightbulb"></i> Ceilings & Lighting</button>
+        <button class="project-filter-btn" data-category-filter="office-interiors"><i class="fas fa-briefcase"></i> Office & Commercial</button>
+        <button class="project-filter-btn" data-category-filter="home-painting"><i class="fas fa-paint-roller"></i> Painting & Execution</button>
       </div>
 
-      <div class="gallery-grid">
-        <div class="project-card" data-category="home" data-date="Dec 2025" data-location="Jubilee Hills, Hyderabad" data-type="Luxury Villa" data-desc="Double-height living area with custom Italian marble backdrops, warm cove illumination, and modular sofas.">
-          <img src="assets/images/hero1.png" alt="Luxury Living Room Project">
-          <div class="project-overlay"><span class="project-category">Home Interior</span><h3 class="project-title">Jubilee Hills Villa</h3></div>
-        </div>
-
-        <div class="project-card" data-category="kitchen" data-date="Jan 2026" data-location="Gachibowli, Hyderabad" data-type="Modular Kitchen" data-desc="Handle-less luxury quartz modular kitchen with integrated breakfast counter and soft-close drawers.">
-          <img src="assets/images/hero2.png" alt="Modular Kitchen Project">
-          <div class="project-overlay"><span class="project-category">Kitchen</span><h3 class="project-title">Gachibowli Kitchen</h3></div>
-        </div>
-
-        <div class="project-card" data-category="bedroom" data-date="Nov 2025" data-location="Banjara Hills, Hyderabad" data-type="Master Suite" data-desc="Plush master suite bedroom with warm ambient architectural lighting and glass wardrobe doors.">
-          <img src="assets/images/hero3.png" alt="Master Suite Bedroom Project">
-          <div class="project-overlay"><span class="project-category">Bedroom</span><h3 class="project-title">Banjara Master Suite</h3></div>
-        </div>
-
-        <div class="project-card" data-category="office" data-date="Jan 2026" data-location="HITEC City, Hyderabad" data-type="Corporate Office" data-desc="Modern executive corporate office design featuring acoustic glass wall partitions and ergonomic wooden workstations.">
-          <img src="assets/images/office.png" alt="Corporate Office Interior Project">
-          <div class="project-overlay"><span class="project-category">Office</span><h3 class="project-title">HITEC City Corporate Suite</h3></div>
-        </div>
-
-        <div class="project-card" data-category="painting" data-date="Feb 2026" data-location="Kondapur, Hyderabad" data-type="Royal Home Painting" data-desc="Dust-free luxury interior wall painting with washable royal emulsion and hand-crafted metallic accent walls.">
-          <img src="assets/images/painting.png" alt="Home Painting Service Project">
-          <div class="project-overlay"><span class="project-category">Painting</span><h3 class="project-title">Kondapur Luxury Residence</h3></div>
-        </div>
+      <div class="gallery-grid" id="master-projects-gallery">
+        <!-- Rendered dynamically by js/main.js -->
       </div>
     </div>
   </section>
@@ -93,12 +71,88 @@
     </div>
   </div>
 
+  <!-- Footer -->
   <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand-logo" style="margin-bottom: 16px; display: inline-block;">
+          <img src="assets/images/logo.png" alt="SVE Elegant Interiors Logo" style="height: 56px; width: auto; object-fit: contain; filter: brightness(0) invert(1);">
+        </a>
+        <p>SVE Elegant Interiors is a premier interior design and professional home painting company. We build elegant, functional, and timeless luxury spaces.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="services.html">Our Services</a></li>
+          <li><a href="projects.html">Featured Projects</a></li>
+          <li><a href="why-choose-us.html">Why Choose Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Top Services</h4>
+        <ul class="footer-links">
+          <li><a href="service-detail.html?id=interior-design">Interior Design</a></li>
+          <li><a href="service-detail.html?id=modular-kitchens">Modular Kitchens</a></li>
+          <li><a href="service-detail.html?id=wardrobes">Custom Wardrobes</a></li>
+          <li><a href="service-detail.html?id=home-painting">Home Painting</a></li>
+          <li><a href="service-detail.html?id=false-ceiling">False Ceilings</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <p style="margin-bottom: 8px;"><i class="fas fa-phone-alt" style="color: var(--accent-gold);"></i> +91 9100097311</p>
+        <p style="margin-bottom: 8px;"><i class="fas fa-envelope" style="color: var(--accent-gold);"></i> info@svelegantinteriors.com</p>
+        <p style="font-size: 0.85rem;"><i class="fas fa-map-marker-alt" style="color: var(--accent-gold);"></i> Quthubullapur, Medchal, Telangana 500055</p>
+      </div>
+    </div>
+
     <div class="container footer-bottom">
       <div>© 2026 SVE Elegant Interiors. All Rights Reserved.</div>
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
+  <!-- Floating Action Buttons -->
+  <div class="floating-actions">
+    <a href="https://wa.me/919100097311?text=Hi%20SVE%20Elegant%20Interiors%2C%20I%20would%20like%20to%20get%20a%20quote%20for%20my%20space." target="_blank" class="float-btn whatsapp" title="Chat on WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+      <div class="pulse-ring"></div>
+    </a>
+    <a href="tel:9100097311" class="float-btn call" title="Call Us Now">
+      <i class="fas fa-phone-alt"></i>
+    </a>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" title="Back to Top"><i class="fas fa-arrow-up"></i></button>
+
+  <!-- Mobile Bottom Sticky Quick Bar -->
+  <div class="mobile-bottom-bar">
+    <div class="mobile-bottom-nav">
+      <a href="tel:9100097311" class="mobile-nav-item">
+        <i class="fas fa-phone-alt"></i>
+        <span>Call Now</span>
+      </a>
+      <a href="https://wa.me/919100097311" target="_blank" class="mobile-nav-item">
+        <i class="fab fa-whatsapp"></i>
+        <span>WhatsApp</span>
+      </a>
+      <a href="mailto:info@svelegantinteriors.com" class="mobile-nav-item">
+        <i class="fas fa-envelope"></i>
+        <span>Email Us</span>
+      </a>
+      <a href="https://maps.app.goo.gl/gkEwfNyeMemnVQb56?g_st=ac" target="_blank" class="mobile-nav-item">
+        <i class="fas fa-directions"></i>
+        <span>Get Direction</span>
+      </a>
+    </div>
+  </div>
+
+  <script src="js/main.js?v=1.1"></script>
 </body>
 </html>
