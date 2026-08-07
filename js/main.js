@@ -446,80 +446,72 @@ function initBackToTop() {
   });
 }
 
-/* --- 15. Master Image Catalog & Service Mappings (61 Images) --- */
+/* --- 15. Master Image Catalog & Service Mappings (53 Unique Images) --- */
 const SERVICE_GALLERY_IMAGES = [
-  // Modular Kitchens (9)
+  // Modular Kitchens (8)
   { id: 1, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Elegant Luxury Kitchen Design', src: 'elegant-kitchen-design.jpg.jpeg' },
   { id: 2, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Modern Pink Modular Kitchen', src: 'elegant-modern-pink-kitchen-interior-design.jpg.jpeg' },
   { id: 3, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Contemporary Modular Kitchen', src: 'interior-design-decoration-nice-modern-kitchen.jpg.jpeg' },
   { id: 4, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Minimalist Kitchen Concept', src: 'minimalist-kitchen-interior-design (1).jpg.jpeg' },
   { id: 5, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Quartz Finish Modular Layout', src: 'minimalist-kitchen-interior-design (2).jpg.jpeg' },
-  { id: 6, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Minimalist Kitchen Architecture', src: 'minimalist-kitchen-interior-design.jpg.jpeg' },
-  { id: 7, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Modern Dark Grey Kitchen Suite', src: 'modern-dark-grey-small-kitchen-interior.jpg.jpeg' },
-  { id: 8, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'White & Wood Modular Kitchen', src: 'modern-kitchen-interior-white-colors.jpg.jpeg' },
-  { id: 9, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Modern Pink Kitchen Accent', src: 'modern-pink-kitchen-interior.jpg.jpeg' },
+  { id: 6, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Modern Dark Grey Kitchen Suite', src: 'modern-dark-grey-small-kitchen-interior.jpg.jpeg' },
+  { id: 7, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'White & Wood Modular Kitchen', src: 'modern-kitchen-interior-white-colors.jpg.jpeg' },
+  { id: 8, serviceId: 'modular-kitchens', category: 'Modular Kitchens', title: 'Modern Pink Kitchen Accent', src: 'modern-pink-kitchen-interior.jpg.jpeg' },
 
-  // Bedrooms & Wardrobes (11)
-  { id: 10, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Luxury Hotel Suite Bedroom with TV', src: '3d-rendering-beautiful-luxury-bedroom-suite-hotel-with-tv (1).jpg.jpeg' },
-  { id: 11, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Master Bedroom TV Suite', src: '3d-rendering-beautiful-luxury-bedroom-suite-hotel-with-tv.jpg.jpeg' },
-  { id: 12, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Luxurious Bedroom Interior Renders', src: '3d-rendering-luxurious-bedroom-interior.jpg.jpeg' },
-  { id: 13, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Hotel Suite Bedroom & Wardrobe', src: '3d-rendering-luxury-bedroom-suite-hotel-with-tv-cabinet-wardrobe.jpg.jpeg' },
-  { id: 14, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Modern Bedroom Architectural Render', src: 'illustration-bedroom-interior.jpg.jpeg' },
-  { id: 15, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Minimalist Luxury Bedroom Design', src: 'minimalist-luxury-modern-bed-room-design-morning-light-modern-interior-concept.jpg.jpeg' },
-  { id: 16, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Scandinavian Wooden Bedroom Suite', src: 'modern-light-bedroom-with-wooden-furniture-scandinavian-style-3d-rendering.jpg.jpeg' },
-  { id: 17, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Contemporary Wooden Bedroom Layout', src: 'modern-wooden-bedroom-design (1).jpg (1).jpeg' },
-  { id: 18, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Warm Wood Bedroom & Wardrobes', src: 'modern-wooden-bedroom-design.jpg.jpeg' },
-  { id: 19, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Aesthetic Pink Bedroom Suite', src: 'pink-bedroom-with-aesthetic-decor.jpg.jpeg' },
-  { id: 20, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Luxury Hotel Suite Layout', src: 'room-interior-hotel-bedroom.jpg.jpeg' },
+  // Bedrooms & Wardrobes (9)
+  { id: 9, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Luxury Hotel Suite Bedroom with TV', src: '3d-rendering-beautiful-luxury-bedroom-suite-hotel-with-tv.jpg.jpeg' },
+  { id: 10, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Luxurious Bedroom Interior Renders', src: '3d-rendering-luxurious-bedroom-interior.jpg.jpeg' },
+  { id: 11, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Hotel Suite Bedroom & Wardrobe', src: '3d-rendering-luxury-bedroom-suite-hotel-with-tv-cabinet-wardrobe.jpg.jpeg' },
+  { id: 12, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Modern Bedroom Architectural Render', src: 'illustration-bedroom-interior.jpg.jpeg' },
+  { id: 13, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Minimalist Luxury Bedroom Design', src: 'minimalist-luxury-modern-bed-room-design-morning-light-modern-interior-concept.jpg.jpeg' },
+  { id: 14, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Scandinavian Wooden Bedroom Suite', src: 'modern-light-bedroom-with-wooden-furniture-scandinavian-style-3d-rendering.jpg.jpeg' },
+  { id: 15, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Warm Wood Bedroom & Wardrobes', src: 'modern-wooden-bedroom-design.jpg.jpeg' },
+  { id: 16, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Aesthetic Pink Bedroom Suite', src: 'pink-bedroom-with-aesthetic-decor.jpg.jpeg' },
+  { id: 17, serviceId: 'wardrobes', category: 'Bedrooms & Wardrobes', title: 'Luxury Hotel Suite Layout', src: 'room-interior-hotel-bedroom.jpg.jpeg' },
 
-  // Living Rooms & TV Units (18)
-  { id: 21, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Modern TV Wall Decoration Design', src: '3d-render-modern-tv-wall-decoration-interior-design-inspiration.jpg copy.jpeg' },
-  { id: 22, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Luxury Dining & Living Room Layout', src: '3d-rendering-modern-dining-room-living-room-with-luxury-decor (1).jpg.jpeg' },
-  { id: 23, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Modern Living Room Decor Renders', src: '3d-rendering-modern-dining-room-living-room-with-luxury-decor.jpg.jpeg' },
-  { id: 24, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Warm Ambient Light TV Cabinet & Bar', src: 'clear-tv-clean-walls-warm-light-tv-cabinet-wine-bottle-8-pieces-hdar-916-ar-32-style-raw-v-6-job-id.jpg.jpeg' },
-  { id: 25, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Contemporary Living Room Illustration', src: 'illustration-living-room-interior (2).jpg.jpeg' },
-  { id: 26, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Modern Living Space Interior Illustration', src: 'illustration-living-room-interior.jpg.jpeg' },
-  { id: 27, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Loft Luxury Living Room & Bookshelf', src: 'loft-luxury-living-room-with-bookshelf-near-dining-table.jpg copy.jpeg' },
-  { id: 28, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Luxury Loft Living & Dining Suite', src: 'loft-luxury-living-room-with-bookshelf-near-dining-table.jpg.jpeg' },
-  { id: 29, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Luxury Modern Apartment Interior', src: 'luxury-modern-apartment-with-comfortable-pillow-decor-generated-by-ai.jpg.jpeg' },
-  { id: 30, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Modern Living Room Big Screen TV Console', src: 'modern-living-room-with-big-screen-tv.jpg.jpeg' },
-  { id: 31, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Sectional Sofa & Luxury TV Unit', src: 'modern-living-room-with-elegant-tv-unit-sectional-sofa.jpg.jpeg' },
-  { id: 32, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Flat Screen TV Unit & Coffee Table', src: 'modern-living-room-with-large-flat-screen-tv-black-coffee-table.jpg.jpeg' },
-  { id: 33, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Minimalist LCD TV Wall Console', src: 'modern-minimalist-lcd-tv-wall-unit.jpg.jpeg' },
-  { id: 34, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Space-Saving Wall Mounted Entertainment Unit', src: 'modern-stylish-wall-mounted-tv-unit-perfect-space-saving-living-rooms-entertainment-areas.jpg.jpeg' },
-  { id: 35, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Residential Interior Design Living Room', src: 'residential-interior-design (1).jpg.jpeg' },
-  { id: 36, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Luxury Villa Residential Interior Design', src: 'residential-interior-design.jpg.jpeg' },
-  { id: 37, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Aspirational House Wall-Mounted TV Unit', src: 'room-luxury-house-wallmounted-tv-interior-design-aspirational-house.jpg.jpeg' },
-  { id: 38, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Zen Japanese Style Modern TV Cabinet', src: 'tv-cabinet-modern-empty-room-japanese-zen-styleminimal-designs.jpg.jpeg' },
+  // Living Rooms & TV Units (14)
+  { id: 18, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Modern TV Wall Decoration Design', src: '3d-render-modern-tv-wall-decoration-interior-design-inspiration.jpg copy.jpeg' },
+  { id: 19, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Modern Living Room Decor Renders', src: '3d-rendering-modern-dining-room-living-room-with-luxury-decor.jpg.jpeg' },
+  { id: 20, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Warm Ambient Light TV Cabinet & Bar', src: 'clear-tv-clean-walls-warm-light-tv-cabinet-wine-bottle-8-pieces-hdar-916-ar-32-style-raw-v-6-job-id.jpg.jpeg' },
+  { id: 21, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Contemporary Living Room Illustration', src: 'illustration-living-room-interior.jpg.jpeg' },
+  { id: 22, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Luxury Loft Living & Dining Suite', src: 'loft-luxury-living-room-with-bookshelf-near-dining-table.jpg.jpeg' },
+  { id: 23, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Luxury Modern Apartment Interior', src: 'luxury-modern-apartment-with-comfortable-pillow-decor-generated-by-ai.jpg.jpeg' },
+  { id: 24, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Modern Living Room Big Screen TV Console', src: 'modern-living-room-with-big-screen-tv.jpg.jpeg' },
+  { id: 25, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Sectional Sofa & Luxury TV Unit', src: 'modern-living-room-with-elegant-tv-unit-sectional-sofa.jpg.jpeg' },
+  { id: 26, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Flat Screen TV Unit & Coffee Table', src: 'modern-living-room-with-large-flat-screen-tv-black-coffee-table.jpg.jpeg' },
+  { id: 27, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Minimalist LCD TV Wall Console', src: 'modern-minimalist-lcd-tv-wall-unit.jpg.jpeg' },
+  { id: 28, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Space-Saving Wall Mounted Entertainment Unit', src: 'modern-stylish-wall-mounted-tv-unit-perfect-space-saving-living-rooms-entertainment-areas.jpg.jpeg' },
+  { id: 29, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Luxury Villa Residential Interior Design', src: 'residential-interior-design.jpg.jpeg' },
+  { id: 30, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Aspirational House Wall-Mounted TV Unit', src: 'room-luxury-house-wallmounted-tv-interior-design-aspirational-house.jpg.jpeg' },
+  { id: 31, serviceId: 'tv-units', category: 'Living Rooms & TV Units', title: 'Zen Japanese Style Modern TV Cabinet', src: 'tv-cabinet-modern-empty-room-japanese-zen-styleminimal-designs.jpg.jpeg' },
 
   // Ceilings & Lighting (3)
-  { id: 39, serviceId: 'false-ceiling', category: 'Ceilings & Lighting', title: '3D Ceiling Lighting Render', src: 'ceiling-design-3d-rendering.jpg.jpeg' },
-  { id: 40, serviceId: 'false-ceiling', category: 'Ceilings & Lighting', title: 'Ambient False Ceiling Wallpaper', src: 'ceiling-image-background-wallpaper.jpg.jpeg' },
-  { id: 41, serviceId: 'false-ceiling', category: 'Ceilings & Lighting', title: 'Ceiling Cove Lights & Large Window', src: 'ceiling-with-lights-large-window.jpg.jpeg' },
+  { id: 32, serviceId: 'false-ceiling', category: 'Ceilings & Lighting', title: '3D Ceiling Lighting Render', src: 'ceiling-design-3d-rendering.jpg.jpeg' },
+  { id: 33, serviceId: 'false-ceiling', category: 'Ceilings & Lighting', title: 'Ambient False Ceiling Wallpaper', src: 'ceiling-image-background-wallpaper.jpg.jpeg' },
+  { id: 34, serviceId: 'false-ceiling', category: 'Ceilings & Lighting', title: 'Ceiling Cove Lights & Large Window', src: 'ceiling-with-lights-large-window.jpg.jpeg' },
 
   // Office & Commercial (7)
-  { id: 42, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Green Eco Working Room & Office', src: '3d-rendering-business-meeting-green-working-room-office-building.jpg.jpeg' },
-  { id: 43, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Executive Business Meeting Room Renders', src: '3d-rendering-luxury-business-meeting-working-room-executive-office.jpg.jpeg' },
-  { id: 44, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'High-Rise Office Meeting Room', src: 'business-meeting-room-high-rise-office-building-with-colorful-decor-furnture.jpg.jpeg' },
-  { id: 45, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Corporate Business Conference Suite', src: 'business-meeting-working-room-office-building.jpg.jpeg' },
-  { id: 46, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Minimalist Corporate Office Design', src: 'minimalist-office-interior-design.jpg.jpeg' },
-  { id: 47, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Modern Workspace & Collaborative Office', src: 'modern-corporate-office-workspace-with-sleek-interiors-collaborative-design.jpg.jpeg' },
-  { id: 48, serviceId: 'office-interiors', category: 'Office & Commercial', title: '3D Office Interior Architectural Layout', src: 'office-interior-3d-illustration.jpg.jpeg' },
+  { id: 35, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Green Eco Working Room & Office', src: '3d-rendering-business-meeting-green-working-room-office-building.jpg.jpeg' },
+  { id: 36, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Executive Business Meeting Room Renders', src: '3d-rendering-luxury-business-meeting-working-room-executive-office.jpg.jpeg' },
+  { id: 37, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'High-Rise Office Meeting Room', src: 'business-meeting-room-high-rise-office-building-with-colorful-decor-furnture.jpg.jpeg' },
+  { id: 38, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Corporate Business Conference Suite', src: 'business-meeting-working-room-office-building.jpg.jpeg' },
+  { id: 39, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Minimalist Corporate Office Design', src: 'minimalist-office-interior-design.jpg.jpeg' },
+  { id: 40, serviceId: 'office-interiors', category: 'Office & Commercial', title: 'Modern Workspace & Collaborative Office', src: 'modern-corporate-office-workspace-with-sleek-interiors-collaborative-design.jpg.jpeg' },
+  { id: 41, serviceId: 'office-interiors', category: 'Office & Commercial', title: '3D Office Interior Architectural Layout', src: 'office-interior-3d-illustration.jpg.jpeg' },
 
-  // Painting & Execution Work (13)
-  { id: 49, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Carpenter & Furniture Assembly Craftsmanship', src: 'furniture-assembly-worker-standing-reading-instruction-using-tape-measure-worker-tools.jpg.jpeg' },
-  { id: 50, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Furniture Assembly Specialist Inspection', src: 'male-worker-showing-thumb-sign-after-assambles-shelf-new-furniture-home-owners.jpg.jpeg' },
-  { id: 51, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Handyman Painting Interior Accent Wall Yellow', src: 'man-painting-walls-yellow.jpg.jpeg' },
-  { id: 52, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Turnkey Renovation Architect Planning', src: 'man-renovating-his-house-with-design-space.jpg.jpeg' },
-  { id: 53, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Master Craftsman On-Site Execution', src: 'man-with-hat-that-says-smile-his-face.jpg.jpeg' },
-  { id: 54, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Professional Paint Roller & Emulsion Mixing', src: 'masaking-blue-paint-with-roller-brush-dipped-white-paint-handyman-renovating-apartment-redecoration-home-construction-while-renovating-improving-repair-decorating.jpg.jpeg' },
-  { id: 55, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Professional Painter Wall Coating', src: 'photography-professional-painter-pain-house.jpg.jpeg' },
-  { id: 56, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Certified Plumbing & Mechanical Specialist', src: 'plumber-you-can-count-full-length-shot-cheerful-young-plumber-wearing-tool-belt-smiling.jpg.jpeg' },
-  { id: 57, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Dust-Free Interior Wall Painting Execution', src: 'professional-painter-painting-wall-with-paint-roller.jpg.jpeg' },
-  { id: 58, serviceId: 'home-painting', category: 'Painting & Execution', title: 'On-Site Contractors & Turnkey Remodeling', src: 'room-being-remodeled-with-contractors (1).jpg.jpeg' },
-  { id: 59, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Turnkey Interior Remodeling Team', src: 'room-being-remodeled-with-contractors.jpg.jpeg' },
-  { id: 60, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Specialist Engineers & Site Supervisors', src: 'specialists-workers-engineers-photo.jpg.jpeg' },
-  { id: 61, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Wall Roller Painting Craftsmanship', src: 'woman-paints-wall-with-roller.jpg.jpeg' }
+  // Painting & Execution Work (12)
+  { id: 42, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Carpenter & Furniture Assembly Craftsmanship', src: 'furniture-assembly-worker-standing-reading-instruction-using-tape-measure-worker-tools.jpg.jpeg' },
+  { id: 43, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Furniture Assembly Specialist Inspection', src: 'male-worker-showing-thumb-sign-after-assambles-shelf-new-furniture-home-owners.jpg.jpeg' },
+  { id: 44, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Handyman Painting Interior Accent Wall Yellow', src: 'man-painting-walls-yellow.jpg.jpeg' },
+  { id: 45, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Turnkey Renovation Architect Planning', src: 'man-renovating-his-house-with-design-space.jpg.jpeg' },
+  { id: 46, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Master Craftsman On-Site Execution', src: 'man-with-hat-that-says-smile-his-face.jpg.jpeg' },
+  { id: 47, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Professional Paint Roller & Emulsion Mixing', src: 'masaking-blue-paint-with-roller-brush-dipped-white-paint-handyman-renovating-apartment-redecoration-home-construction-while-renovating-improving-repair-decorating.jpg.jpeg' },
+  { id: 48, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Professional Painter Wall Coating', src: 'photography-professional-painter-pain-house.jpg.jpeg' },
+  { id: 49, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Certified Plumbing & Mechanical Specialist', src: 'plumber-you-can-count-full-length-shot-cheerful-young-plumber-wearing-tool-belt-smiling.jpg.jpeg' },
+  { id: 50, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Dust-Free Interior Wall Painting Execution', src: 'professional-painter-painting-wall-with-paint-roller.jpg.jpeg' },
+  { id: 51, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Turnkey Interior Remodeling Team', src: 'room-being-remodeled-with-contractors.jpg.jpeg' },
+  { id: 52, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Specialist Engineers & Site Supervisors', src: 'specialists-workers-engineers-photo.jpg.jpeg' },
+  { id: 53, serviceId: 'home-painting', category: 'Painting & Execution', title: 'Wall Roller Painting Craftsmanship', src: 'woman-paints-wall-with-roller.jpg.jpeg' }
 ];
 
 const SERVICES_CATALOG = [
