@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SVE Elegant Interiors - Master JavaScript Engine
+   SV Elegant Interior - Master JavaScript Engine
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -388,7 +388,7 @@ function initContactForm() {
         return;
       }
 
-      const formattedMsg = `*New Interior Design Inquiry - SVE Elegant Interiors*%0A%0A` +
+      const formattedMsg = `*New Interior Design Inquiry - SV Elegant Interior*%0A%0A` +
         `*Name:* ${encodeURIComponent(name)}%0A` +
         `*Phone:* ${encodeURIComponent(phone)}%0A` +
         `*Email:* ${encodeURIComponent(email)}%0A` +
@@ -401,7 +401,7 @@ function initContactForm() {
 
       const whatsappUrl = `https://wa.me/919100097311?text=${formattedMsg}`;
 
-      showToast(`Thank you ${name}! Opening SVE Elegant Interiors WhatsApp chat...`, 'success');
+      showToast(`Thank you ${name}! Opening SV Elegant Interior WhatsApp chat...`, 'success');
       setTimeout(() => {
         window.open(whatsappUrl, '_blank');
       }, 1000);
@@ -705,7 +705,7 @@ function initServicePage() {
 
   const service = SERVICES_CATALOG.find(s => s.id === serviceId) || SERVICES_CATALOG[0];
 
-  document.title = `${service.name} - SVE Elegant Interiors`;
+  document.title = `${service.name} - SV Elegant Interior`;
 
   // Get service specific images
   let relatedPhotos = SERVICE_GALLERY_IMAGES.filter(img => img.serviceId === serviceId);
@@ -728,7 +728,7 @@ function initServicePage() {
         <div>
           <span class="section-tag">Premium Solution</span>
           <h2 style="font-size: 2.2rem; margin-bottom: 20px;">Why Choose Our ${service.name} Services?</h2>
-          <p style="color: var(--text-muted); margin-bottom: 16px;">At SVE Elegant Interiors, our ${service.name} process blends European aesthetic standards with precision craftsmanship. We use top-tier materials, dust-free installation methods, and strict timeline controls.</p>
+          <p style="color: var(--text-muted); margin-bottom: 16px;">At SV Elegant Interior, our ${service.name} process blends European aesthetic standards with precision craftsmanship. We use top-tier materials, dust-free installation methods, and strict timeline controls.</p>
           <p style="color: var(--text-muted); margin-bottom: 30px;">Whether you are looking to renovate a single room or complete a multi-story project, our expert interior architects ensure every detail aligns with your lifestyle and budget.</p>
           <button class="btn btn-primary" onclick="openServiceQuoteModal('${service.name}')"><i class="fab fa-whatsapp"></i> Request Quote for ${service.name}</button>
         </div>
