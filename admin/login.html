@@ -116,7 +116,7 @@
       if (db) {
         const { data: { session } } = await db.auth.getSession();
         if (session) {
-          window.location.href = 'index.html';
+          window.location.href = '/admin/index.html';
         }
       }
     });
@@ -137,7 +137,16 @@
 
       try {
         const db = window.supabaseClient;
-        const { data, error } = await db.auth.signInWithPassword({ email, password });
+        let { data, error } = await db.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          // Attempt automatic registration if account has not been created in Supabase Auth yet
+          const signUpRes = await db.auth.signUp({ email, password });
+          if (!signUpRes.error && signUpRes.data?.user) {
+            data = signUpRes.data;
+            error = null;
+          }
+        }
 
         if (error) {
           showAdminToast(error.message || 'Invalid credentials.', 'error');
@@ -146,8 +155,8 @@
         } else {
           showAdminToast('Welcome back Admin! Redirecting...', 'success');
           setTimeout(() => {
-            window.location.href = 'index.html';
-          }, 1000);
+            window.location.href = '/admin/index.html';
+          }, 800);
         }
       } catch (err) {
         showAdminToast('Login failed: ' + err.message, 'error');

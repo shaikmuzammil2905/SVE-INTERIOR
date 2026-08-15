@@ -21,8 +21,10 @@ async function checkAdminAuth() {
   const { data: { session }, error } = await db.auth.getSession();
   
   if (error || !session) {
-    // Redirect unauthenticated user to login
-    window.location.href = 'login.html';
+    // Redirect unauthenticated user to absolute admin login path
+    if (!window.location.pathname.endsWith('login.html')) {
+      window.location.href = '/admin/login.html';
+    }
   } else {
     // Store user email globally
     window.currentAdminUser = session.user;
@@ -37,7 +39,7 @@ async function handleAdminLogout() {
   }
   showAdminToast('Logged out successfully', 'success');
   setTimeout(() => {
-    window.location.href = 'login.html';
+    window.location.href = '/admin/login.html';
   }, 800);
 }
 
