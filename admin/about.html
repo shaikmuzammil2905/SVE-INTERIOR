@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Section - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">About Section Management</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Edit company profile, mission statement, vision, and featured about photo</p>
+          </div>
+          <button class="btn btn-primary" onclick="saveAboutSection()"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+
+        <div class="table-card" style="padding: 24px;">
+          <form id="about-form">
+            <input type="hidden" id="about-id">
+            <input type="hidden" id="about-image-url">
+            <input type="hidden" id="about-public-id">
+
+            <div class="form-group">
+              <label>Section Heading *</label>
+              <input type="text" id="about-heading" class="form-control" placeholder="Transforming Visions into Luxurious Realities" required>
+            </div>
+
+            <div class="form-group">
+              <label>Main Introduction Description</label>
+              <textarea id="about-main-desc" class="form-control" style="min-height: 110px;" placeholder="SV Elegant Interior is a premier turnkey interior design..."></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Company Mission</label>
+                <textarea id="about-mission" class="form-control" placeholder="To deliver tailored, world-class interior craftsmanship..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Company Vision</label>
+                <textarea id="about-vision" class="form-control" placeholder="To be Hyderabad's most trusted interior design brand..."></textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Detailed Company & Team Story</label>
+              <textarea id="about-company-desc" class="form-control" style="min-height: 110px;" placeholder="With over a decade of experience, our team..."></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Button Text</label>
+                <input type="text" id="about-btn-text" class="form-control" value="Explore Our Services">
+              </div>
+              <div class="form-group">
+                <label>Button Link URL</label>
+                <input type="text" id="about-btn-url" class="form-control" value="services.html">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>About Featured Image</label>
+              <div class="media-upload-box" onclick="document.getElementById('about-file-input').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p style="font-size: 0.88rem; color: var(--text-main);">Click to upload About section photo to Cloudinary</p>
+                <input type="file" id="about-file-input" style="display: none;" accept="image/*" onchange="handleAboutFileUpload(event)">
+                <div class="upload-progress-bar" id="about-upload-progress"><div class="upload-progress-fill" id="about-progress-fill"></div></div>
+                <img src="" id="about-img-preview" class="media-preview-img" style="display: none;">
+              </div>
+              <div style="margin-top: 8px; display: flex; gap: 8px;">
+                <button type="button" class="btn btn-secondary btn-sm" id="about-delete-img-btn" style="display: none;" onclick="removeAboutImage()">
+                  <i class="fas fa-trash"></i> Delete Image
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', loadAboutSection);
+
+    async function loadAboutSection() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('about_section').select('*').limit(1).single();
+        if (data) {
+          document.getElementById('about-id').value = data.id;
+          document.getElementById('about-heading').value = data.heading || '';
+          document.getElementById('about-main-desc').value = data.main_description || '';
+          document.getElementById('about-mission').value = data.mission || '';
+          document.getElementById('about-vision').value = data.vision || '';
+          document.getElementById('about-company-desc').value = data.company_description || '';
+          document.getElementById('about-btn-text').value = data.button_text || 'Explore Our Services';
+          document.getElementById('about-btn-url').value = data.button_url || 'services.html';
+          document.getElementById('about-image-url').value = data.image_url || '';
+          document.getElementById('about-public-id').value = data.cloudinary_public_id || '';
+
+          if (data.image_url) {
+            const preview = document.getElementById('about-img-preview');
+            preview.src = data.image_url.startsWith('http') || data.image_url.startsWith('assets') ? data.image_url : '../' + data.image_url;
+            preview.style.display = 'inline-block';
+            document.getElementById('about-delete-img-btn').style.display = 'inline-block';
+          }
+        }
+      } catch (err) {
+        console.error('Error loading about section:', err);
+      }
+    }
+
+    async function handleAboutFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const progressBox = document.getElementById('about-upload-progress');
+      const fill = document.getElementById('about-progress-fill');
+      const preview = document.getElementById('about-img-preview');
+      const deleteBtn = document.getElementById('about-delete-img-btn');
+
+      progressBox.style.display = 'block';
+      fill.style.width = '0%';
+
+      try {
+        const result = await uploadToCloudinary(file, 'sve-interior/about', (pct) => {
+          fill.style.width = `${pct}%`;
+        });
+
+        document.getElementById('about-image-url').value = result.url;
+        document.getElementById('about-public-id').value = result.public_id;
+
+        preview.src = result.url;
+        preview.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block';
+
+        showAdminToast('About image uploaded to Cloudinary!', 'success');
+      } catch (err) {
+        showAdminToast('Upload error: ' + err.message, 'error');
+      } finally {
+        progressBox.style.display = 'none';
+      }
+    }
+
+    function removeAboutImage() {
+      document.getElementById('about-image-url').value = '';
+      document.getElementById('about-public-id').value = '';
+      document.getElementById('about-img-preview').style.display = 'none';
+      document.getElementById('about-delete-img-btn').style.display = 'none';
+    }
+
+    async function saveAboutSection() {
+      const id = document.getElementById('about-id').value;
+      const heading = document.getElementById('about-heading').value.trim();
+      const main_description = document.getElementById('about-main-desc').value.trim();
+      const mission = document.getElementById('about-mission').value.trim();
+      const vision = document.getElementById('about-vision').value.trim();
+      const company_description = document.getElementById('about-company-desc').value.trim();
+      const button_text = document.getElementById('about-btn-text').value.trim();
+      const button_url = document.getElementById('about-btn-url').value.trim();
+      const image_url = document.getElementById('about-image-url').value;
+      const cloudinary_public_id = document.getElementById('about-public-id').value;
+
+      if (!heading) {
+        showAdminToast('Heading is required.', 'error');
+        return;
+      }
+
+      const db = window.supabaseClient;
+      const payload = {
+        heading, main_description, mission, vision, company_description,
+        button_text, button_url, image_url, cloudinary_public_id
+      };
+
+      try {
+        if (id) {
+          await db.from('about_section').update(payload).eq('id', id);
+        } else {
+          await db.from('about_section').insert([payload]);
+        }
+        await logAdminActivity('Updated About Section', 'About', id, heading);
+        showAdminToast('About Section changes saved successfully!', 'success');
+      } catch (e) {
+        showAdminToast('Failed to save changes: ' + e.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>

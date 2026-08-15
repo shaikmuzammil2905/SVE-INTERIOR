@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects Management - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Portfolio Projects Management</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage executed project portfolio & 3D renders (53 items)</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" onclick="openProjectModal()"><i class="fas fa-plus"></i> Add Project</button>
+          </div>
+        </div>
+
+        <!-- Search & Category Filters -->
+        <div class="action-header" style="background-color: var(--admin-card-bg); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--admin-border);">
+          <div class="search-filter-box">
+            <div class="search-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="project-search-input" placeholder="Search project title..." onkeyup="filterProjects()">
+            </div>
+            <select id="project-cat-filter" class="filter-select" onchange="filterProjects()">
+              <option value="all">All Categories</option>
+              <option value="Modular Kitchens">Modular Kitchens</option>
+              <option value="Bedrooms & Wardrobes">Bedrooms & Wardrobes</option>
+              <option value="Living & TV Units">Living & TV Units</option>
+              <option value="Ceilings & Lighting">Ceilings & Lighting</option>
+              <option value="Office & Commercial">Office & Commercial</option>
+              <option value="Painting & Execution">Painting & Execution</option>
+            </select>
+            <select id="project-status-filter" class="filter-select" onchange="filterProjects()">
+              <option value="all">All Statuses</option>
+              <option value="published">Published</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);" id="project-count-badge">Total Projects: 0</span>
+        </div>
+
+        <div class="table-card" style="margin-top: 16px;">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Featured Image</th>
+                  <th>Project Title</th>
+                  <th>Category</th>
+                  <th>Location</th>
+                  <th>Completion</th>
+                  <th>Status</th>
+                  <th>Featured</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="projects-tbody">
+                <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">Loading projects catalog...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Project Edit / Add Modal -->
+  <div class="modal-overlay" id="project-modal">
+    <div class="modal-container" style="max-width: 740px;">
+      <div class="modal-header">
+        <h3 id="project-modal-title">Add Portfolio Project</h3>
+        <button class="modal-close" onclick="closeProjectModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="project-form">
+          <input type="hidden" id="prj-id">
+          <input type="hidden" id="prj-image-url">
+          <input type="hidden" id="prj-public-id">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Project Title *</label>
+              <input type="text" id="prj-title" class="form-control" placeholder="Elegant Luxury Kitchen Design" required onkeyup="autoGenerateProjectSlug()">
+            </div>
+            <div class="form-group">
+              <label>URL Slug *</label>
+              <input type="text" id="prj-slug" class="form-control" placeholder="elegant-luxury-kitchen-design" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Category</label>
+              <select id="prj-category" class="form-control">
+                <option value="Modular Kitchens">Modular Kitchens</option>
+                <option value="Bedrooms & Wardrobes">Bedrooms & Wardrobes</option>
+                <option value="Living & TV Units">Living & TV Units</option>
+                <option value="Ceilings & Lighting">Ceilings & Lighting</option>
+                <option value="Office & Commercial">Office & Commercial</option>
+                <option value="Painting & Execution">Painting & Execution</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Location</label>
+              <input type="text" id="prj-location" class="form-control" placeholder="Gachibowli, Hyderabad">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Project Type / Style</label>
+              <input type="text" id="prj-type" class="form-control" placeholder="Luxury Residential / Turnkey">
+            </div>
+            <div class="form-group">
+              <label>Completion Date</label>
+              <input type="text" id="prj-date" class="form-control" placeholder="Jan 2026">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Project Description</label>
+            <textarea id="prj-desc" class="form-control" placeholder="Detailed description of executed project..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Display Order</label>
+              <input type="number" id="prj-order" class="form-control" value="1">
+            </div>
+            <div class="form-group">
+              <label>Publish Status</label>
+              <select id="prj-published" class="form-control">
+                <option value="true">Published</option>
+                <option value="false">Hidden</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="prj-featured" style="width: 18px; height: 18px; accent-color: var(--primary-gold);">
+              <span>Show in Home Page Featured Showcase</span>
+            </label>
+          </div>
+
+          <!-- Cloudinary Image Upload -->
+          <div class="form-group">
+            <label>Featured Cover Image *</label>
+            <div class="media-upload-box" onclick="document.getElementById('prj-file-input').click()">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p style="font-size: 0.88rem; color: var(--text-main);">Click to upload project photo to Cloudinary</p>
+              <input type="file" id="prj-file-input" style="display: none;" accept="image/*" onchange="handleProjectFileUpload(event)">
+              <div class="upload-progress-bar" id="prj-upload-progress"><div class="upload-progress-fill" id="prj-progress-fill"></div></div>
+              <img src="" id="prj-img-preview" class="media-preview-img" style="display: none;">
+            </div>
+            <div style="margin-top: 8px; display: flex; gap: 8px;">
+              <button type="button" class="btn btn-secondary btn-sm" id="prj-delete-img-btn" style="display: none;" onclick="removeProjectImage()">
+                <i class="fas fa-trash"></i> Delete Image
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeProjectModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveProjectRecord()">Save Project</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let projectsList = [];
+
+    document.addEventListener('DOMContentLoaded', loadProjectsCatalog);
+
+    async function loadProjectsCatalog() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('projects').select('*').order('display_order', { ascending: true });
+        if (error) throw error;
+        projectsList = data || [];
+        filterProjects();
+      } catch (e) {
+        showAdminToast('Failed to load projects: ' + e.message, 'error');
+      }
+    }
+
+    function filterProjects() {
+      const search = document.getElementById('project-search-input').value.toLowerCase().trim();
+      const cat = document.getElementById('project-cat-filter').value;
+      const status = document.getElementById('project-status-filter').value;
+
+      let filtered = projectsList.filter(p => {
+        const matchesSearch = p.title.toLowerCase().includes(search) || (p.location || '').toLowerCase().includes(search);
+        const matchesCat = cat === 'all' || p.category_name === cat;
+        const matchesStatus = status === 'all' || (status === 'published' && p.is_published) || (status === 'hidden' && !p.is_published);
+        return matchesSearch && matchesCat && matchesStatus;
+      });
+
+      document.getElementById('project-count-badge').textContent = `Showing ${filtered.length} of ${projectsList.length} projects`;
+      renderProjectsTable(filtered);
+    }
+
+    function renderProjectsTable(items) {
+      const tbody = document.getElementById('projects-tbody');
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">No matching projects found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map(p => `
+        <tr>
+          <td><img src="${p.featured_image ? (p.featured_image.startsWith('http') || p.featured_image.startsWith('assets') ? p.featured_image : '../' + p.featured_image) : '../assets/images/hero1.png'}" class="table-img" alt="${p.title}"></td>
+          <td><strong>${p.title}</strong></td>
+          <td>${p.category_name || 'General'}</td>
+          <td>${p.location || 'Hyderabad'}</td>
+          <td>${p.completion_date || '2026'}</td>
+          <td><span class="badge ${p.is_published ? 'badge-success' : 'badge-secondary'}">${p.is_published ? 'Published' : 'Hidden'}</span></td>
+          <td>${p.is_featured ? '<i class="fas fa-star" style="color:var(--primary-gold);"></i>' : '-'}</td>
+          <td>
+            <div class="table-actions">
+              <button class="icon-btn" onclick="editProject('${p.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+              <button class="icon-btn delete" onclick="deleteProject('${p.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function autoGenerateProjectSlug() {
+      const title = document.getElementById('prj-title').value;
+      document.getElementById('prj-slug').value = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    function openProjectModal(prj = null) {
+      document.getElementById('prj-id').value = prj ? prj.id : '';
+      document.getElementById('prj-title').value = prj ? prj.title : '';
+      document.getElementById('prj-slug').value = prj ? prj.slug : '';
+      document.getElementById('prj-category').value = prj ? (prj.category_name || 'Modular Kitchens') : 'Modular Kitchens';
+      document.getElementById('prj-location').value = prj ? (prj.location || '') : '';
+      document.getElementById('prj-type').value = prj ? (prj.project_type || '') : '';
+      document.getElementById('prj-date').value = prj ? (prj.completion_date || '2026') : '2026';
+      document.getElementById('prj-desc').value = prj ? (prj.description || '') : '';
+      document.getElementById('prj-order').value = prj ? prj.display_order : (projectsList.length + 1);
+      document.getElementById('prj-published').value = prj ? String(prj.is_published) : 'true';
+      document.getElementById('prj-featured').checked = prj ? !!prj.is_featured : false;
+      document.getElementById('prj-image-url').value = prj ? (prj.featured_image || '') : '';
+      document.getElementById('prj-public-id').value = prj ? (prj.cloudinary_public_id || '') : '';
+
+      const preview = document.getElementById('prj-img-preview');
+      const deleteBtn = document.getElementById('prj-delete-img-btn');
+
+      if (prj && prj.featured_image) {
+        preview.src = prj.featured_image.startsWith('http') || prj.featured_image.startsWith('assets') ? prj.featured_image : '../' + prj.featured_image;
+        preview.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block';
+      } else {
+        preview.style.display = 'none';
+        deleteBtn.style.display = 'none';
+      }
+
+      document.getElementById('project-modal-title').textContent = prj ? 'Edit Portfolio Project' : 'Add Portfolio Project';
+      document.getElementById('project-modal').classList.add('active');
+    }
+
+    function closeProjectModal() {
+      document.getElementById('project-modal').classList.remove('active');
+    }
+
+    async function handleProjectFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const progressBox = document.getElementById('prj-upload-progress');
+      const fill = document.getElementById('prj-progress-fill');
+      const preview = document.getElementById('prj-img-preview');
+      const deleteBtn = document.getElementById('prj-delete-img-btn');
+
+      progressBox.style.display = 'block';
+      fill.style.width = '0%';
+
+      try {
+        const result = await uploadToCloudinary(file, 'sve-interior/projects', (pct) => {
+          fill.style.width = `${pct}%`;
+        });
+
+        document.getElementById('prj-image-url').value = result.url;
+        document.getElementById('prj-public-id').value = result.public_id;
+
+        preview.src = result.url;
+        preview.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block';
+
+        showAdminToast('Project image uploaded to Cloudinary!', 'success');
+      } catch (err) {
+        showAdminToast('Upload failed: ' + err.message, 'error');
+      } finally {
+        progressBox.style.display = 'none';
+      }
+    }
+
+    function removeProjectImage() {
+      document.getElementById('prj-image-url').value = '';
+      document.getElementById('prj-public-id').value = '';
+      document.getElementById('prj-img-preview').style.display = 'none';
+      document.getElementById('prj-delete-img-btn').style.display = 'none';
+    }
+
+    function editProject(id) {
+      const prj = projectsList.find(p => p.id === id);
+      if (prj) openProjectModal(prj);
+    }
+
+    async function saveProjectRecord() {
+      const id = document.getElementById('prj-id').value;
+      const title = document.getElementById('prj-title').value.trim();
+      const slug = document.getElementById('prj-slug').value.trim();
+      const category_name = document.getElementById('prj-category').value;
+      const location = document.getElementById('prj-location').value.trim();
+      const project_type = document.getElementById('prj-type').value.trim();
+      const completion_date = document.getElementById('prj-date').value.trim();
+      const description = document.getElementById('prj-desc').value.trim();
+      const display_order = parseInt(document.getElementById('prj-order').value) || 1;
+      const is_published = document.getElementById('prj-published').value === 'true';
+      const is_featured = document.getElementById('prj-featured').checked;
+      const featured_image = document.getElementById('prj-image-url').value;
+      const cloudinary_public_id = document.getElementById('prj-public-id').value;
+
+      if (!title || !slug || !featured_image) {
+        showAdminToast('Title, Slug, and Cover Image are required.', 'error');
+        return;
+      }
+
+      const db = window.supabaseClient;
+      const payload = {
+        title, slug, category_name, location, project_type, completion_date,
+        description, display_order, is_published, is_featured, featured_image, cloudinary_public_id
+      };
+
+      try {
+        if (id) {
+          await db.from('projects').update(payload).eq('id', id);
+          await logAdminActivity('Updated Project', 'Projects', id, title);
+          showAdminToast('Project updated successfully!', 'success');
+        } else {
+          await db.from('projects').insert([payload]);
+          await logAdminActivity('Created Project', 'Projects', null, title);
+          showAdminToast('New project created!', 'success');
+        }
+        closeProjectModal();
+        loadProjectsCatalog();
+      } catch (err) {
+        showAdminToast('Failed to save project: ' + err.message, 'error');
+      }
+    }
+
+    function deleteProject(id) {
+      const prj = projectsList.find(p => p.id === id);
+      confirmAction('Delete Project', `Are you sure you want to permanently delete "${prj?.title || 'this project'}"? It will disappear from the public gallery immediately!`, async () => {
+        const db = window.supabaseClient;
+        try {
+          await db.from('projects').delete().eq('id', id);
+          await logAdminActivity('Deleted Project', 'Projects', id, prj?.title || '');
+          showAdminToast('Project deleted from database & public website!', 'success');
+          loadProjectsCatalog();
+        } catch (e) {
+          showAdminToast('Failed to delete project: ' + e.message, 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

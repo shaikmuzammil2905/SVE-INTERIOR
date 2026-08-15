@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Library - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Cloudinary Media Library</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Central asset repository for Cloudinary images & videos</p>
+          </div>
+          <button class="btn btn-primary" onclick="document.getElementById('library-file-input').click()"><i class="fas fa-cloud-upload-alt"></i> Upload New Media</button>
+          <input type="file" id="library-file-input" style="display: none;" accept="image/*,video/*" onchange="uploadLibraryMedia(event)">
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="action-header" style="background-color: var(--admin-card-bg); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--admin-border);">
+          <div class="search-filter-box">
+            <div class="search-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="lib-search-input" placeholder="Search filename or public ID..." onkeyup="filterMediaAssets()">
+            </div>
+            <select id="lib-folder-filter" class="filter-select" onchange="filterMediaAssets()">
+              <option value="all">All Folders</option>
+              <option value="sve-interior/hero">sve-interior/hero</option>
+              <option value="sve-interior/services">sve-interior/services</option>
+              <option value="sve-interior/projects">sve-interior/projects</option>
+              <option value="sve-interior/gallery">sve-interior/gallery</option>
+              <option value="sve-interior/about">sve-interior/about</option>
+            </select>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);" id="lib-count-badge">Total Assets: 0</span>
+        </div>
+
+        <!-- Media Upload Progress -->
+        <div class="upload-progress-bar" id="lib-upload-progress" style="margin-top: 14px;"><div class="upload-progress-fill" id="lib-progress-fill"></div></div>
+
+        <!-- Media Grid -->
+        <div class="media-grid" id="library-grid" style="margin-top: 20px;">
+          <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Loading Cloudinary assets...</div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let mediaList = [];
+
+    document.addEventListener('DOMContentLoaded', loadMediaAssets);
+
+    async function loadMediaAssets() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('media_assets').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        mediaList = data || [];
+        filterMediaAssets();
+      } catch (err) {
+        showAdminToast('Failed to load media assets: ' + err.message, 'error');
+      }
+    }
+
+    function filterMediaAssets() {
+      const search = document.getElementById('lib-search-input').value.toLowerCase().trim();
+      const folder = document.getElementById('lib-folder-filter').value;
+
+      let filtered = mediaList.filter(m => {
+        const matchesSearch = (m.file_name || '').toLowerCase().includes(search) || (m.cloudinary_public_id || '').toLowerCase().includes(search);
+        const matchesFolder = folder === 'all' || m.folder === folder;
+        return matchesSearch && matchesFolder;
+      });
+
+      document.getElementById('lib-count-badge').textContent = `Showing ${filtered.length} of ${mediaList.length} assets`;
+      renderMediaGrid(filtered);
+    }
+
+    function renderMediaGrid(items) {
+      const grid = document.getElementById('library-grid');
+      if (items.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No media assets found in library.</div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(m => `
+        <div class="media-item">
+          <img src="${m.secure_url}" alt="${m.file_name}">
+          <div style="padding: 10px;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.file_name || 'Asset'}</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">${m.folder || 'sve-interior'} &bull; ${m.width ? m.width + 'x' + m.height : 'File'}</div>
+          </div>
+          <div class="media-item-overlay">
+            <button class="icon-btn" onclick="copyMediaUrl('${m.secure_url}')" title="Copy Image URL"><i class="fas fa-copy"></i></button>
+            <button class="icon-btn delete" onclick="deleteMediaAsset('${m.id}')" title="Delete Asset"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function uploadLibraryMedia(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const progressBox = document.getElementById('lib-upload-progress');
+      const fill = document.getElementById('lib-progress-fill');
+
+      progressBox.style.display = 'block';
+      fill.style.width = '0%';
+
+      try {
+        await uploadToCloudinary(file, 'sve-interior/library', (pct) => {
+          fill.style.width = `${pct}%`;
+        });
+
+        await logAdminActivity('Uploaded Media Asset', 'Media Library', null, file.name);
+        showAdminToast('File uploaded to Cloudinary & saved to Media Library!', 'success');
+        loadMediaAssets();
+      } catch (err) {
+        showAdminToast('Upload failed: ' + err.message, 'error');
+      } finally {
+        progressBox.style.display = 'none';
+      }
+    }
+
+    function copyMediaUrl(url) {
+      navigator.clipboard.writeText(url).then(() => {
+        showAdminToast('Cloudinary URL copied to clipboard!', 'success');
+      }).catch(() => {
+        showAdminToast('URL: ' + url, 'success');
+      });
+    }
+
+    function deleteMediaAsset(id) {
+      const asset = mediaList.find(m => m.id === id);
+      confirmAction('Delete Cloudinary Asset', `Are you sure you want to delete "${asset?.file_name || 'this media'}"?`, async () => {
+        const db = window.supabaseClient;
+        try {
+          await db.from('media_assets').delete().eq('id', id);
+          await logAdminActivity('Deleted Media Asset', 'Media Library', id, asset?.file_name || '');
+          showAdminToast('Asset removed from library!', 'success');
+          loadMediaAssets();
+        } catch (e) {
+          showAdminToast('Failed to delete asset: ' + e.message, 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

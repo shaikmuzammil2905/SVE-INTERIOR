@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Logs - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Admin Audit & Activity Logs</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Historical record of all CMS mutations, uploads, edits, & deletions</p>
+          </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="action-header" style="background-color: var(--admin-card-bg); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--admin-border);">
+          <div class="search-filter-box">
+            <div class="search-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="log-search-input" placeholder="Search action or details..." onkeyup="filterLogs()">
+            </div>
+            <select id="log-module-filter" class="filter-select" onchange="filterLogs()">
+              <option value="all">All Modules</option>
+              <option value="Services">Services</option>
+              <option value="Projects">Projects</option>
+              <option value="Gallery">Gallery</option>
+              <option value="Hero Section">Hero Section</option>
+              <option value="Contact Requests">Contact Requests</option>
+              <option value="Media Library">Media Library</option>
+              <option value="Settings">Settings</option>
+            </select>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);" id="log-count-badge">Total Logs: 0</span>
+        </div>
+
+        <div class="table-card" style="margin-top: 16px;">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Admin Email</th>
+                  <th>Module</th>
+                  <th>Action</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="log-tbody">
+                <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">Loading audit logs...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let logsList = [];
+
+    document.addEventListener('DOMContentLoaded', loadActivityLogs);
+
+    async function loadActivityLogs() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(100);
+        if (error) throw error;
+        logsList = data || [];
+        filterLogs();
+      } catch (err) {
+        showAdminToast('Failed to load activity logs: ' + err.message, 'error');
+      }
+    }
+
+    function filterLogs() {
+      const search = document.getElementById('log-search-input').value.toLowerCase().trim();
+      const moduleName = document.getElementById('log-module-filter').value;
+
+      let filtered = logsList.filter(l => {
+        const matchesSearch = l.action.toLowerCase().includes(search) || (l.details || '').toLowerCase().includes(search);
+        const matchesModule = moduleName === 'all' || l.module === moduleName;
+        return matchesSearch && matchesModule;
+      });
+
+      document.getElementById('log-count-badge').textContent = `Showing ${filtered.length} of ${logsList.length} logs`;
+      renderLogsTable(filtered);
+    }
+
+    function renderLogsTable(items) {
+      const tbody = document.getElementById('log-tbody');
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">No audit logs found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map(l => `
+        <tr>
+          <td><span style="font-size:0.82rem; color:var(--text-muted);">${new Date(l.created_at).toLocaleString()}</span></td>
+          <td><strong>${l.admin_email}</strong></td>
+          <td><span class="badge badge-info">${l.module}</span></td>
+          <td><span class="badge ${l.action.includes('Deleted') ? 'badge-warning' : 'badge-success'}">${l.action}</span></td>
+          <td>${l.details || '-'}</td>
+        </tr>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

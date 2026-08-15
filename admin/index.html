@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - SV Elegant Interior</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <!-- Quick Action Buttons Bar -->
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Dashboard Overview</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time statistics & website operations</p>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="services.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Service</a>
+            <a href="projects.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Project</a>
+            <a href="gallery.html" class="btn btn-primary btn-sm"><i class="fas fa-upload"></i> Upload Gallery</a>
+            <a href="contact-requests.html" class="btn btn-secondary btn-sm"><i class="fas fa-envelope"></i> Contact Requests</a>
+          </div>
+        </div>
+
+        <!-- Real Stats Cards Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon gold"><i class="fas fa-concierge-bell"></i></div>
+            <div class="stat-info">
+              <h3 id="stat-services-count">0</h3>
+              <p>Total Services</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-tasks"></i></div>
+            <div class="stat-info">
+              <h3 id="stat-projects-count">0</h3>
+              <p>Total Projects</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon teal"><i class="fas fa-images"></i></div>
+            <div class="stat-info">
+              <h3 id="stat-gallery-count">0</h3>
+              <p>Gallery Media</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon orange"><i class="fas fa-envelope-open-text"></i></div>
+            <div class="stat-info">
+              <h3 id="stat-requests-count">0</h3>
+              <p>Quote Requests</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Published vs Hidden Summary Card -->
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 30px;">
+          <div class="stat-card" style="border-left: 4px solid var(--accent-teal);">
+            <div class="stat-info">
+              <h3 id="stat-published-count" style="color: var(--accent-teal);">0</h3>
+              <p>Active Published Items</p>
+            </div>
+          </div>
+          <div class="stat-card" style="border-left: 4px solid var(--accent-orange);">
+            <div class="stat-info">
+              <h3 id="stat-hidden-count" style="color: var(--accent-orange);">0</h3>
+              <p>Hidden / Draft Items</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Contact / Quote Requests Table -->
+        <div style="margin-bottom: 40px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">Recent Quote Requests</h4>
+            <a href="contact-requests.html" style="font-size: 0.85rem; color: var(--primary-gold);">View All <i class="fas fa-arrow-right"></i></a>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Service Required</th>
+                    <th>Date Received</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-requests-tbody">
+                  <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading requests from database...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Projects Table -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">Recent Projects</h4>
+            <a href="projects.html" style="font-size: 0.85rem; color: var(--primary-gold);">Manage Projects <i class="fas fa-arrow-right"></i></a>
+          </div>
+
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Project Title</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-projects-tbody">
+                  <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading recent projects...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Fetch Dashboard Real Database Numbers
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const [servicesRes, projectsRes, galleryRes, testimonialsRes, requestsRes] = await Promise.all([
+          db.from('services').select('*', { count: 'exact' }),
+          db.from('projects').select('*', { count: 'exact' }),
+          db.from('gallery').select('*', { count: 'exact' }),
+          db.from('testimonials').select('*', { count: 'exact' }),
+          db.from('contact_requests').select('*', { count: 'exact' }).order('created_at', { ascending: false })
+        ]);
+
+        document.getElementById('stat-services-count').textContent = servicesRes.count || 0;
+        document.getElementById('stat-projects-count').textContent = projectsRes.count || 0;
+        document.getElementById('stat-gallery-count').textContent = galleryRes.count || 0;
+        document.getElementById('stat-requests-count').textContent = requestsRes.count || 0;
+
+        // Calculate Published vs Hidden Across Services & Projects
+        const pubServices = (servicesRes.data || []).filter(s => s.is_published).length;
+        const hidServices = (servicesRes.data || []).filter(s => !s.is_published).length;
+        const pubProjects = (projectsRes.data || []).filter(p => p.is_published).length;
+        const hidProjects = (projectsRes.data || []).filter(p => !p.is_published).length;
+
+        document.getElementById('stat-published-count').textContent = pubServices + pubProjects;
+        document.getElementById('stat-hidden-count').textContent = hidServices + hidProjects;
+
+        // Render Recent Requests (Top 5)
+        const recentRequests = (requestsRes.data || []).slice(0, 5);
+        const reqTbody = document.getElementById('recent-requests-tbody');
+        if (recentRequests.length === 0) {
+          reqTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No contact inquiries received yet.</td></tr>`;
+        } else {
+          reqTbody.innerHTML = recentRequests.map(r => `
+            <tr>
+              <td><strong>${r.full_name}</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">${r.email || 'No Email'}</span></td>
+              <td>${r.phone}</td>
+              <td><span class="badge badge-info">${r.service_required || 'General'}</span></td>
+              <td>${new Date(r.created_at).toLocaleDateString()}</td>
+              <td><span class="badge ${r.status === 'New' ? 'badge-warning' : 'badge-success'}">${r.status}</span></td>
+              <td>
+                <a href="contact-requests.html" class="icon-btn" title="View Request"><i class="fas fa-eye"></i></a>
+              </td>
+            </tr>
+          `).join('');
+        }
+
+        // Render Recent Projects (Top 5)
+        const recentProjects = (projectsRes.data || []).slice(0, 5);
+        const projTbody = document.getElementById('recent-projects-tbody');
+        if (recentProjects.length === 0) {
+          projTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">No projects created yet.</td></tr>`;
+        } else {
+          projTbody.innerHTML = recentProjects.map(p => `
+            <tr>
+              <td><img src="${p.featured_image.startsWith('http') || p.featured_image.startsWith('assets') ? p.featured_image : '../' + p.featured_image}" class="table-img" alt="${p.title}"></td>
+              <td><strong>${p.title}</strong></td>
+              <td>${p.category_name}</td>
+              <td>${p.location || 'Hyderabad'}</td>
+              <td><span class="badge ${p.is_published ? 'badge-success' : 'badge-secondary'}">${p.is_published ? 'Published' : 'Hidden'}</span></td>
+            </tr>
+          `).join('');
+        }
+
+      } catch (err) {
+        console.error('Error fetching dashboard metrics:', err);
+      }
+    });
+  </script>
+</body>
+</html>

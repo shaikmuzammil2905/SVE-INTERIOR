@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services Management - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Services Management</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage interior design & painting service catalog (21 items)</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" onclick="openServiceModal()"><i class="fas fa-plus"></i> Add Service</button>
+          </div>
+        </div>
+
+        <!-- Search & Filter Controls -->
+        <div class="action-header" style="background-color: var(--admin-card-bg); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--admin-border);">
+          <div class="search-filter-box">
+            <div class="search-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="service-search-input" placeholder="Search service name..." onkeyup="filterServices()">
+            </div>
+            <select id="service-cat-filter" class="filter-select" onchange="filterServices()">
+              <option value="all">All Categories</option>
+              <option value="Residential Interiors">Residential Interiors</option>
+              <option value="Kitchen & Storage">Kitchen & Storage</option>
+              <option value="Ceilings & Decor">Ceilings & Decor</option>
+              <option value="Painting & Finish">Painting & Finish</option>
+              <option value="Commercial & Office">Commercial & Office</option>
+            </select>
+            <select id="service-status-filter" class="filter-select" onchange="filterServices()">
+              <option value="all">All Statuses</option>
+              <option value="published">Published</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);" id="service-count-badge">Total Services: 0</span>
+        </div>
+
+        <div class="table-card" style="margin-top: 16px;">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Service Name</th>
+                  <th>Category</th>
+                  <th>Icon</th>
+                  <th>Status</th>
+                  <th>Featured</th>
+                  <th>Order</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="services-tbody">
+                <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">Loading services catalog...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Service Edit / Add Modal -->
+  <div class="modal-overlay" id="service-modal">
+    <div class="modal-container" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3 id="service-modal-title">Add New Service</h3>
+        <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="service-form">
+          <input type="hidden" id="srv-id">
+          <input type="hidden" id="srv-image-url">
+          <input type="hidden" id="srv-public-id">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Service Name *</label>
+              <input type="text" id="srv-name" class="form-control" placeholder="Modular Kitchens" required onkeyup="autoGenerateSlug()">
+            </div>
+            <div class="form-group">
+              <label>URL Slug *</label>
+              <input type="text" id="srv-slug" class="form-control" placeholder="modular-kitchens" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Category</label>
+              <select id="srv-category" class="form-control">
+                <option value="Residential Interiors">Residential Interiors</option>
+                <option value="Kitchen & Storage">Kitchen & Storage</option>
+                <option value="Ceilings & Decor">Ceilings & Decor</option>
+                <option value="Painting & Finish">Painting & Finish</option>
+                <option value="Commercial & Office">Commercial & Office</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>FontAwesome Icon Class</label>
+              <input type="text" id="srv-icon" class="form-control" placeholder="fas fa-couch">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Short Summary Description</label>
+            <input type="text" id="srv-short-desc" class="form-control" placeholder="Brief 1-sentence overview...">
+          </div>
+
+          <div class="form-group">
+            <label>Full Detailed Description</label>
+            <textarea id="srv-full-desc" class="form-control" placeholder="Comprehensive detail for service-detail.html page..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Display Order</label>
+              <input type="number" id="srv-order" class="form-control" value="1">
+            </div>
+            <div class="form-group">
+              <label>Publish Status</label>
+              <select id="srv-published" class="form-control">
+                <option value="true">Published (Visible Publicly)</option>
+                <option value="false">Hidden (Draft)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="srv-featured" style="width: 18px; height: 18px; accent-color: var(--primary-gold);">
+              <span>Feature on Home Page Grid</span>
+            </label>
+          </div>
+
+          <!-- Cloudinary Upload -->
+          <div class="form-group">
+            <label>Service Feature Image</label>
+            <div class="media-upload-box" onclick="document.getElementById('srv-file-input').click()">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p style="font-size: 0.88rem; color: var(--text-main);">Click to upload service photo to Cloudinary</p>
+              <input type="file" id="srv-file-input" style="display: none;" accept="image/*" onchange="handleServiceFileUpload(event)">
+              <div class="upload-progress-bar" id="srv-upload-progress"><div class="upload-progress-fill" id="srv-progress-fill"></div></div>
+              <img src="" id="srv-img-preview" class="media-preview-img" style="display: none;">
+            </div>
+            <div style="margin-top: 8px; display: flex; gap: 8px;">
+              <button type="button" class="btn btn-secondary btn-sm" id="srv-delete-img-btn" style="display: none;" onclick="removeServiceImage()">
+                <i class="fas fa-trash"></i> Delete Image
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeServiceModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveServiceRecord()">Save Service</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let servicesList = [];
+
+    document.addEventListener('DOMContentLoaded', loadServicesCatalog);
+
+    async function loadServicesCatalog() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('services').select('*').order('display_order', { ascending: true });
+        if (error) throw error;
+        servicesList = data || [];
+        filterServices();
+      } catch (e) {
+        showAdminToast('Failed to load services: ' + e.message, 'error');
+      }
+    }
+
+    function filterServices() {
+      const search = document.getElementById('service-search-input').value.toLowerCase().trim();
+      const cat = document.getElementById('service-cat-filter').value;
+      const status = document.getElementById('service-status-filter').value;
+
+      let filtered = servicesList.filter(s => {
+        const matchesSearch = s.name.toLowerCase().includes(search) || (s.short_description || '').toLowerCase().includes(search);
+        const matchesCat = cat === 'all' || s.category === cat;
+        const matchesStatus = status === 'all' || (status === 'published' && s.is_published) || (status === 'hidden' && !s.is_published);
+        return matchesSearch && matchesCat && matchesStatus;
+      });
+
+      document.getElementById('service-count-badge').textContent = `Showing ${filtered.length} of ${servicesList.length} services`;
+      renderServicesTable(filtered);
+    }
+
+    function renderServicesTable(items) {
+      const tbody = document.getElementById('services-tbody');
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">No matching services found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map(s => `
+        <tr>
+          <td><img src="${s.image_url ? (s.image_url.startsWith('http') || s.image_url.startsWith('assets') ? s.image_url : '../' + s.image_url) : '../assets/images/hero1.png'}" class="table-img" alt="${s.name}"></td>
+          <td><strong>${s.name}</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">${s.slug}</span></td>
+          <td>${s.category || 'General'}</td>
+          <td><i class="${s.icon_class || 'fas fa-couch'}" style="color:var(--primary-gold);"></i></td>
+          <td><span class="badge ${s.is_published ? 'badge-success' : 'badge-secondary'}">${s.is_published ? 'Published' : 'Hidden'}</span></td>
+          <td>${s.is_featured ? '<i class="fas fa-check text-success"></i>' : '-'}</td>
+          <td>${s.display_order}</td>
+          <td>
+            <div class="table-actions">
+              <button class="icon-btn" onclick="editService('${s.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+              <button class="icon-btn delete" onclick="deleteService('${s.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function autoGenerateSlug() {
+      const name = document.getElementById('srv-name').value;
+      document.getElementById('srv-slug').value = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    function openServiceModal(srv = null) {
+      document.getElementById('srv-id').value = srv ? srv.id : '';
+      document.getElementById('srv-name').value = srv ? srv.name : '';
+      document.getElementById('srv-slug').value = srv ? srv.slug : '';
+      document.getElementById('srv-category').value = srv ? (srv.category || 'Residential Interiors') : 'Residential Interiors';
+      document.getElementById('srv-icon').value = srv ? (srv.icon_class || 'fas fa-couch') : 'fas fa-couch';
+      document.getElementById('srv-short-desc').value = srv ? (srv.short_description || '') : '';
+      document.getElementById('srv-full-desc').value = srv ? (srv.full_description || '') : '';
+      document.getElementById('srv-order').value = srv ? srv.display_order : (servicesList.length + 1);
+      document.getElementById('srv-published').value = srv ? String(srv.is_published) : 'true';
+      document.getElementById('srv-featured').checked = srv ? !!srv.is_featured : false;
+      document.getElementById('srv-image-url').value = srv ? (srv.image_url || '') : '';
+      document.getElementById('srv-public-id').value = srv ? (srv.cloudinary_public_id || '') : '';
+
+      const preview = document.getElementById('srv-img-preview');
+      const deleteBtn = document.getElementById('srv-delete-img-btn');
+
+      if (srv && srv.image_url) {
+        preview.src = srv.image_url.startsWith('http') || srv.image_url.startsWith('assets') ? srv.image_url : '../' + srv.image_url;
+        preview.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block';
+      } else {
+        preview.style.display = 'none';
+        deleteBtn.style.display = 'none';
+      }
+
+      document.getElementById('service-modal-title').textContent = srv ? 'Edit Service' : 'Add New Service';
+      document.getElementById('service-modal').classList.add('active');
+    }
+
+    function closeServiceModal() {
+      document.getElementById('service-modal').classList.remove('active');
+    }
+
+    async function handleServiceFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const progressBox = document.getElementById('srv-upload-progress');
+      const fill = document.getElementById('srv-progress-fill');
+      const preview = document.getElementById('srv-img-preview');
+      const deleteBtn = document.getElementById('srv-delete-img-btn');
+
+      progressBox.style.display = 'block';
+      fill.style.width = '0%';
+
+      try {
+        const result = await uploadToCloudinary(file, 'sve-interior/services', (pct) => {
+          fill.style.width = `${pct}%`;
+        });
+
+        document.getElementById('srv-image-url').value = result.url;
+        document.getElementById('srv-public-id').value = result.public_id;
+
+        preview.src = result.url;
+        preview.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block';
+
+        showAdminToast('Service image uploaded to Cloudinary!', 'success');
+      } catch (err) {
+        showAdminToast('Upload failed: ' + err.message, 'error');
+      } finally {
+        progressBox.style.display = 'none';
+      }
+    }
+
+    function removeServiceImage() {
+      document.getElementById('srv-image-url').value = '';
+      document.getElementById('srv-public-id').value = '';
+      document.getElementById('srv-img-preview').style.display = 'none';
+      document.getElementById('srv-delete-img-btn').style.display = 'none';
+    }
+
+    function editService(id) {
+      const srv = servicesList.find(s => s.id === id);
+      if (srv) openServiceModal(srv);
+    }
+
+    async function saveServiceRecord() {
+      const id = document.getElementById('srv-id').value;
+      const name = document.getElementById('srv-name').value.trim();
+      const slug = document.getElementById('srv-slug').value.trim();
+      const category = document.getElementById('srv-category').value;
+      const icon_class = document.getElementById('srv-icon').value.trim() || 'fas fa-couch';
+      const short_description = document.getElementById('srv-short-desc').value.trim();
+      const full_description = document.getElementById('srv-full-desc').value.trim();
+      const display_order = parseInt(document.getElementById('srv-order').value) || 1;
+      const is_published = document.getElementById('srv-published').value === 'true';
+      const is_featured = document.getElementById('srv-featured').checked;
+      const image_url = document.getElementById('srv-image-url').value;
+      const cloudinary_public_id = document.getElementById('srv-public-id').value;
+
+      if (!name || !slug) {
+        showAdminToast('Service Name and Slug are required.', 'error');
+        return;
+      }
+
+      const db = window.supabaseClient;
+      const payload = {
+        name, slug, category, icon_class, short_description, full_description,
+        display_order, is_published, is_featured, image_url, cloudinary_public_id
+      };
+
+      try {
+        if (id) {
+          await db.from('services').update(payload).eq('id', id);
+          await logAdminActivity('Updated Service', 'Services', id, name);
+          showAdminToast('Service updated successfully!', 'success');
+        } else {
+          await db.from('services').insert([payload]);
+          await logAdminActivity('Created Service', 'Services', null, name);
+          showAdminToast('New service added!', 'success');
+        }
+        closeServiceModal();
+        loadServicesCatalog();
+      } catch (err) {
+        showAdminToast('Failed to save service: ' + err.message, 'error');
+      }
+    }
+
+    function deleteService(id) {
+      const srv = servicesList.find(s => s.id === id);
+      confirmAction('Delete Service', `Are you sure you want to permanently delete "${srv?.name || 'this service'}"? It will be removed immediately from the public website!`, async () => {
+        const db = window.supabaseClient;
+        try {
+          await db.from('services').delete().eq('id', id);
+          await logAdminActivity('Deleted Service', 'Services', id, srv?.name || '');
+          showAdminToast('Service deleted from database & public site!', 'success');
+          loadServicesCatalog();
+        } catch (e) {
+          showAdminToast('Failed to delete service: ' + e.message, 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

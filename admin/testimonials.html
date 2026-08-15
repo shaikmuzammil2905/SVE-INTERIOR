@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testimonials Management - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Client Testimonials</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage customer reviews, ratings & feedback slider</p>
+          </div>
+          <button class="btn btn-primary" onclick="openTestimonialModal()"><i class="fas fa-plus"></i> Add Testimonial</button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Location</th>
+                  <th>Review</th>
+                  <th>Rating</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="test-tbody">
+                <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Loading testimonials...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Dialog -->
+  <div class="modal-overlay" id="test-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="test-modal-title">Add Client Testimonial</h3>
+        <button class="modal-close" onclick="closeTestimonialModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="test-form">
+          <input type="hidden" id="test-id">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Client Name *</label>
+              <input type="text" id="test-name" class="form-control" placeholder="Rajesh Varma" required>
+            </div>
+            <div class="form-group">
+              <label>Location / Project</label>
+              <input type="text" id="test-location" class="form-control" placeholder="Jubilee Hills, Hyderabad">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Testimonial Review *</label>
+            <textarea id="test-text" class="form-control" placeholder="SV Elegant Interior transformed our villa..." required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Rating (1 to 5 Stars)</label>
+              <select id="test-rating" class="form-control">
+                <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
+                <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+                <option value="3">⭐⭐⭐ (3 Stars)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Display Order</label>
+              <input type="number" id="test-order" class="form-control" value="1">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select id="test-published" class="form-control">
+              <option value="true">Published</option>
+              <option value="false">Hidden</option>
+            </select>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeTestimonialModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTestimonialRecord()">Save Testimonial</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let testimonialsList = [];
+
+    document.addEventListener('DOMContentLoaded', loadTestimonials);
+
+    async function loadTestimonials() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('testimonials').select('*').order('display_order', { ascending: true });
+        if (error) throw error;
+        testimonialsList = data || [];
+        renderTestimonialsTable();
+      } catch (err) {
+        showAdminToast('Failed to load testimonials: ' + err.message, 'error');
+      }
+    }
+
+    function renderTestimonialsTable() {
+      const tbody = document.getElementById('test-tbody');
+      if (testimonialsList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No testimonials found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = testimonialsList.map(t => `
+        <tr>
+          <td><strong>${t.client_name}</strong></td>
+          <td>${t.location || 'Hyderabad'}</td>
+          <td style="max-width:320px;">"${t.testimonial_text}"</td>
+          <td>${'⭐'.repeat(t.rating || 5)}</td>
+          <td><span class="badge ${t.is_published ? 'badge-success' : 'badge-secondary'}">${t.is_published ? 'Published' : 'Hidden'}</span></td>
+          <td>
+            <div class="table-actions">
+              <button class="icon-btn" onclick="editTestimonial('${t.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+              <button class="icon-btn delete" onclick="deleteTestimonial('${t.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openTestimonialModal(t = null) {
+      document.getElementById('test-id').value = t ? t.id : '';
+      document.getElementById('test-name').value = t ? t.client_name : '';
+      document.getElementById('test-location').value = t ? (t.location || '') : '';
+      document.getElementById('test-text').value = t ? t.testimonial_text : '';
+      document.getElementById('test-rating').value = t ? (t.rating || 5) : 5;
+      document.getElementById('test-order').value = t ? t.display_order : (testimonialsList.length + 1);
+      document.getElementById('test-published').value = t ? String(t.is_published) : 'true';
+
+      document.getElementById('test-modal-title').textContent = t ? 'Edit Testimonial' : 'Add Client Testimonial';
+      document.getElementById('test-modal').classList.add('active');
+    }
+
+    function closeTestimonialModal() {
+      document.getElementById('test-modal').classList.remove('active');
+    }
+
+    function editTestimonial(id) {
+      const t = testimonialsList.find(item => item.id === id);
+      if (t) openTestimonialModal(t);
+    }
+
+    async function saveTestimonialRecord() {
+      const id = document.getElementById('test-id').value;
+      const client_name = document.getElementById('test-name').value.trim();
+      const location = document.getElementById('test-location').value.trim();
+      const testimonial_text = document.getElementById('test-text').value.trim();
+      const rating = parseInt(document.getElementById('test-rating').value) || 5;
+      const display_order = parseInt(document.getElementById('test-order').value) || 1;
+      const is_published = document.getElementById('test-published').value === 'true';
+
+      if (!client_name || !testimonial_text) {
+        showAdminToast('Client Name and Review text are required.', 'error');
+        return;
+      }
+
+      const db = window.supabaseClient;
+      const payload = { client_name, location, testimonial_text, rating, display_order, is_published };
+
+      try {
+        if (id) {
+          await db.from('testimonials').update(payload).eq('id', id);
+          await logAdminActivity('Updated Testimonial', 'Testimonials', id, client_name);
+          showAdminToast('Testimonial updated!', 'success');
+        } else {
+          await db.from('testimonials').insert([payload]);
+          await logAdminActivity('Added Testimonial', 'Testimonials', null, client_name);
+          showAdminToast('New testimonial created!', 'success');
+        }
+        closeTestimonialModal();
+        loadTestimonials();
+      } catch (err) {
+        showAdminToast('Failed to save testimonial: ' + err.message, 'error');
+      }
+    }
+
+    function deleteTestimonial(id) {
+      const t = testimonialsList.find(item => item.id === id);
+      confirmAction('Delete Testimonial', `Are you sure you want to delete testimonial from "${t?.client_name || 'this client'}"?`, async () => {
+        const db = window.supabaseClient;
+        try {
+          await db.from('testimonials').delete().eq('id', id);
+          await logAdminActivity('Deleted Testimonial', 'Testimonials', id, t?.client_name || '');
+          showAdminToast('Testimonial deleted!', 'success');
+          loadTestimonials();
+        } catch (e) {
+          showAdminToast('Failed to delete: ' + e.message, 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

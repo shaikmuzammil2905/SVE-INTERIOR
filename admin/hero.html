@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Section - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Hero Section Slides</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage home page main banner sliders & call-to-action buttons</p>
+          </div>
+          <button class="btn btn-primary" onclick="openHeroModal()"><i class="fas fa-plus"></i> Add Hero Slide</button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Slide Image</th>
+                  <th>Headline</th>
+                  <th>Subheading</th>
+                  <th>CTA Button</th>
+                  <th>Status</th>
+                  <th>Order</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="hero-tbody">
+                <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">Loading hero slides...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Hero Slide Edit/Add Modal -->
+  <div class="modal-overlay" id="hero-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="hero-modal-title">Add Hero Slide</h3>
+        <button class="modal-close" onclick="closeHeroModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="hero-form">
+          <input type="hidden" id="hero-id">
+          <input type="hidden" id="hero-image-url">
+          <input type="hidden" id="hero-public-id">
+
+          <div class="form-group">
+            <label>Headline Title *</label>
+            <input type="text" id="hero-headline" class="form-control" placeholder="Transforming Spaces Into Timeless Luxury" required>
+          </div>
+
+          <div class="form-group">
+            <label>Subheading Tagline</label>
+            <input type="text" id="hero-subheading" class="form-control" placeholder="Premium Interior Solutions">
+          </div>
+
+          <div class="form-group">
+            <label>Description Paragraph</label>
+            <textarea id="hero-description" class="form-control" placeholder="We design elegant, functional, and stylish spaces..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Primary Button Text</label>
+              <input type="text" id="hero-primary-text" class="form-control" value="Book Consultation">
+            </div>
+            <div class="form-group">
+              <label>Primary Button URL</label>
+              <input type="text" id="hero-primary-url" class="form-control" value="#contact">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Secondary Button Text</label>
+              <input type="text" id="hero-secondary-text" class="form-control" value="View Projects">
+            </div>
+            <div class="form-group">
+              <label>Secondary Button URL</label>
+              <input type="text" id="hero-secondary-url" class="form-control" value="projects.html">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Display Order</label>
+              <input type="number" id="hero-order" class="form-control" value="1">
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="hero-published" class="form-control">
+                <option value="true">Published</option>
+                <option value="false">Hidden</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Cloudinary Upload -->
+          <div class="form-group">
+            <label>Hero Background Image *</label>
+            <div class="media-upload-box" onclick="document.getElementById('hero-file-input').click()">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p style="font-size: 0.88rem; color: var(--text-main);">Click to upload hero image to Cloudinary</p>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Recommended: 1920x1080 high-resolution photo</span>
+              <input type="file" id="hero-file-input" style="display: none;" accept="image/*" onchange="handleHeroFileUpload(event)">
+              <div class="upload-progress-bar" id="hero-upload-progress"><div class="upload-progress-fill" id="hero-progress-fill"></div></div>
+              <img src="" id="hero-img-preview" class="media-preview-img" style="display: none;">
+            </div>
+            <div style="margin-top: 8px; display: flex; gap: 8px;">
+              <button type="button" class="btn btn-secondary btn-sm" id="hero-delete-img-btn" style="display: none;" onclick="removeHeroImage()">
+                <i class="fas fa-trash"></i> Delete Image
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeHeroModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveHeroSlide()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let heroSlides = [];
+
+    document.addEventListener('DOMContentLoaded', loadHeroSlides);
+
+    async function loadHeroSlides() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('hero_slides').select('*').order('display_order', { ascending: true });
+        if (error) throw error;
+        heroSlides = data || [];
+        renderHeroTable();
+      } catch (err) {
+        showAdminToast('Failed to load hero slides: ' + err.message, 'error');
+      }
+    }
+
+    function renderHeroTable() {
+      const tbody = document.getElementById('hero-tbody');
+      if (heroSlides.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No hero slides found. Add your first slide!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = heroSlides.map(s => `
+        <tr>
+          <td><img src="${s.image_url.startsWith('http') || s.image_url.startsWith('assets') ? s.image_url : '../' + s.image_url}" class="table-img" alt="Hero"></td>
+          <td><strong>${s.headline}</strong></td>
+          <td>${s.subheading || '-'}</td>
+          <td>${s.primary_btn_text}</td>
+          <td><span class="badge ${s.is_published ? 'badge-success' : 'badge-secondary'}">${s.is_published ? 'Published' : 'Hidden'}</span></td>
+          <td>${s.display_order}</td>
+          <td>
+            <div class="table-actions">
+              <button class="icon-btn" onclick="editHeroSlide('${s.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+              <button class="icon-btn delete" onclick="deleteHeroSlide('${s.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openHeroModal(slide = null) {
+      document.getElementById('hero-id').value = slide ? slide.id : '';
+      document.getElementById('hero-headline').value = slide ? slide.headline : '';
+      document.getElementById('hero-subheading').value = slide ? (slide.subheading || '') : '';
+      document.getElementById('hero-description').value = slide ? (slide.description || '') : '';
+      document.getElementById('hero-primary-text').value = slide ? slide.primary_btn_text : 'Book Consultation';
+      document.getElementById('hero-primary-url').value = slide ? slide.primary_btn_url : '#contact';
+      document.getElementById('hero-secondary-text').value = slide ? slide.secondary_btn_text : 'View Projects';
+      document.getElementById('hero-secondary-url').value = slide ? slide.secondary_btn_url : 'projects.html';
+      document.getElementById('hero-order').value = slide ? slide.display_order : (heroSlides.length + 1);
+      document.getElementById('hero-published').value = slide ? String(slide.is_published) : 'true';
+      document.getElementById('hero-image-url').value = slide ? slide.image_url : '';
+      document.getElementById('hero-public-id').value = slide ? (slide.cloudinary_public_id || '') : '';
+
+      const preview = document.getElementById('hero-img-preview');
+      const deleteBtn = document.getElementById('hero-delete-img-btn');
+
+      if (slide && slide.image_url) {
+        preview.src = slide.image_url.startsWith('http') || slide.image_url.startsWith('assets') ? slide.image_url : '../' + slide.image_url;
+        preview.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block';
+      } else {
+        preview.style.display = 'none';
+        deleteBtn.style.display = 'none';
+      }
+
+      document.getElementById('hero-modal-title').textContent = slide ? 'Edit Hero Slide' : 'Add Hero Slide';
+      document.getElementById('hero-modal').classList.add('active');
+    }
+
+    function closeHeroModal() {
+      document.getElementById('hero-modal').classList.remove('active');
+    }
+
+    async function handleHeroFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const progressBox = document.getElementById('hero-upload-progress');
+      const fill = document.getElementById('hero-progress-fill');
+      const preview = document.getElementById('hero-img-preview');
+      const deleteBtn = document.getElementById('hero-delete-img-btn');
+
+      progressBox.style.display = 'block';
+      fill.style.width = '0%';
+
+      try {
+        const result = await uploadToCloudinary(file, 'sve-interior/hero', (pct) => {
+          fill.style.width = `${pct}%`;
+        });
+
+        document.getElementById('hero-image-url').value = result.url;
+        document.getElementById('hero-public-id').value = result.public_id;
+
+        preview.src = result.url;
+        preview.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block';
+
+        showAdminToast('Hero image uploaded to Cloudinary!', 'success');
+      } catch (err) {
+        showAdminToast('Upload failed: ' + err.message, 'error');
+      } finally {
+        progressBox.style.display = 'none';
+      }
+    }
+
+    function removeHeroImage() {
+      document.getElementById('hero-image-url').value = '';
+      document.getElementById('hero-public-id').value = '';
+      document.getElementById('hero-img-preview').style.display = 'none';
+      document.getElementById('hero-delete-img-btn').style.display = 'none';
+    }
+
+    function editHeroSlide(id) {
+      const slide = heroSlides.find(s => s.id === id);
+      if (slide) openHeroModal(slide);
+    }
+
+    async function saveHeroSlide() {
+      const id = document.getElementById('hero-id').value;
+      const headline = document.getElementById('hero-headline').value.trim();
+      const subheading = document.getElementById('hero-subheading').value.trim();
+      const description = document.getElementById('hero-description').value.trim();
+      const primary_btn_text = document.getElementById('hero-primary-text').value.trim();
+      const primary_btn_url = document.getElementById('hero-primary-url').value.trim();
+      const secondary_btn_text = document.getElementById('hero-secondary-text').value.trim();
+      const secondary_btn_url = document.getElementById('hero-secondary-url').value.trim();
+      const display_order = parseInt(document.getElementById('hero-order').value) || 1;
+      const is_published = document.getElementById('hero-published').value === 'true';
+      const image_url = document.getElementById('hero-image-url').value;
+      const cloudinary_public_id = document.getElementById('hero-public-id').value;
+
+      if (!headline || !image_url) {
+        showAdminToast('Headline title and Background image are required.', 'error');
+        return;
+      }
+
+      const db = window.supabaseClient;
+      const payload = {
+        headline, subheading, description, primary_btn_text, primary_btn_url,
+        secondary_btn_text, secondary_btn_url, display_order, is_published,
+        image_url, cloudinary_public_id
+      };
+
+      try {
+        if (id) {
+          await db.from('hero_slides').update(payload).eq('id', id);
+          await logAdminActivity('Updated Hero Slide', 'Hero Section', id, headline);
+          showAdminToast('Hero slide updated successfully!', 'success');
+        } else {
+          await db.from('hero_slides').insert([payload]);
+          await logAdminActivity('Added Hero Slide', 'Hero Section', null, headline);
+          showAdminToast('New hero slide created!', 'success');
+        }
+        closeHeroModal();
+        loadHeroSlides();
+      } catch (err) {
+        showAdminToast('Failed to save slide: ' + err.message, 'error');
+      }
+    }
+
+    function deleteHeroSlide(id) {
+      confirmAction('Delete Hero Slide', 'Are you sure you want to remove this slide? It will disappear from the home page.', async () => {
+        const db = window.supabaseClient;
+        try {
+          await db.from('hero_slides').delete().eq('id', id);
+          await logAdminActivity('Deleted Hero Slide', 'Hero Section', id, '');
+          showAdminToast('Hero slide deleted!', 'success');
+          loadHeroSlides();
+        } catch (e) {
+          showAdminToast('Error deleting slide: ' + e.message, 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery Management - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Master Gallery & Media Manager</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage high-resolution photo & video media gallery (53+ items)</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" onclick="openUploadModal()"><i class="fas fa-cloud-upload-alt"></i> Upload Media</button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="action-header" style="background-color: var(--admin-card-bg); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--admin-border);">
+          <div class="search-filter-box">
+            <div class="search-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="gallery-search-input" placeholder="Search gallery title..." onkeyup="filterGallery()">
+            </div>
+            <select id="gallery-cat-filter" class="filter-select" onchange="filterGallery()">
+              <option value="all">All Categories</option>
+              <option value="Modular Kitchens">Modular Kitchens</option>
+              <option value="Bedrooms & Wardrobes">Bedrooms & Wardrobes</option>
+              <option value="Living Rooms & TV Units">Living Rooms & TV Units</option>
+              <option value="Ceilings & Lighting">Ceilings & Lighting</option>
+              <option value="Office & Commercial">Office & Commercial</option>
+              <option value="Painting & Execution">Painting & Execution</option>
+            </select>
+            <select id="gallery-status-filter" class="filter-select" onchange="filterGallery()">
+              <option value="all">All Statuses</option>
+              <option value="published">Published</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);" id="gallery-count-badge">Total Gallery Items: 0</span>
+        </div>
+
+        <!-- Media Grid -->
+        <div class="media-grid" id="gallery-grid" style="margin-top: 20px;">
+          <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">Loading gallery photos...</div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Upload / Edit Modal -->
+  <div class="modal-overlay" id="gallery-modal">
+    <div class="modal-container" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3 id="gallery-modal-title">Upload Gallery Media</h3>
+        <button class="modal-close" onclick="closeGalleryModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="gallery-form">
+          <input type="hidden" id="gal-id">
+          <input type="hidden" id="gal-image-url">
+          <input type="hidden" id="gal-public-id">
+
+          <div class="form-group">
+            <label>Image Title *</label>
+            <input type="text" id="gal-title" class="form-control" placeholder="Elegant Luxury Kitchen Design" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Category *</label>
+              <select id="gal-category" class="form-control">
+                <option value="Modular Kitchens">Modular Kitchens</option>
+                <option value="Bedrooms & Wardrobes">Bedrooms & Wardrobes</option>
+                <option value="Living Rooms & TV Units">Living Rooms & TV Units</option>
+                <option value="Ceilings & Lighting">Ceilings & Lighting</option>
+                <option value="Office & Commercial">Office & Commercial</option>
+                <option value="Painting & Execution">Painting & Execution</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Display Order</label>
+              <input type="number" id="gal-order" class="form-control" value="1">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Publish Status</label>
+            <select id="gal-published" class="form-control">
+              <option value="true">Published (Visible in Public Gallery)</option>
+              <option value="false">Hidden (Draft)</option>
+            </select>
+          </div>
+
+          <!-- Cloudinary Multi File Upload Box -->
+          <div class="form-group">
+            <label>Select Image / Video File *</label>
+            <div class="media-upload-box" onclick="document.getElementById('gal-file-input').click()">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p style="font-size: 0.88rem; color: var(--text-main);">Click to select files & upload to Cloudinary</p>
+              <input type="file" id="gal-file-input" style="display: none;" accept="image/*,video/*" onchange="handleGalleryUpload(event)">
+              <div class="upload-progress-bar" id="gal-upload-progress"><div class="upload-progress-fill" id="gal-progress-fill"></div></div>
+              <img src="" id="gal-img-preview" class="media-preview-img" style="display: none;">
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeGalleryModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveGalleryItem()">Save Gallery Item</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let galleryList = [];
+
+    document.addEventListener('DOMContentLoaded', loadGalleryCatalog);
+
+    async function loadGalleryCatalog() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('gallery').select('*').order('display_order', { ascending: true });
+        if (error) throw error;
+        galleryList = data || [];
+        filterGallery();
+      } catch (e) {
+        showAdminToast('Failed to load gallery: ' + e.message, 'error');
+      }
+    }
+
+    function filterGallery() {
+      const search = document.getElementById('gallery-search-input').value.toLowerCase().trim();
+      const cat = document.getElementById('gallery-cat-filter').value;
+      const status = document.getElementById('gallery-status-filter').value;
+
+      let filtered = galleryList.filter(item => {
+        const matchesSearch = item.title.toLowerCase().includes(search);
+        const matchesCat = cat === 'all' || item.category === cat;
+        const matchesStatus = status === 'all' || (status === 'published' && item.is_published) || (status === 'hidden' && !item.is_published);
+        return matchesSearch && matchesCat && matchesStatus;
+      });
+
+      document.getElementById('gallery-count-badge').textContent = `Showing ${filtered.length} of ${galleryList.length} media items`;
+      renderGalleryGrid(filtered);
+    }
+
+    function renderGalleryGrid(items) {
+      const grid = document.getElementById('gallery-grid');
+      if (items.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No gallery media found.</div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(item => `
+        <div class="media-item">
+          <img src="${item.image_url ? (item.image_url.startsWith('http') || item.image_url.startsWith('assets') ? item.image_url : '../' + item.image_url) : '../assets/images/hero1.png'}" alt="${item.title}">
+          <div style="padding: 10px;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+              <span class="badge badge-info" style="font-size:0.68rem;">${item.category}</span>
+              <span class="badge ${item.is_published ? 'badge-success' : 'badge-secondary'}" style="font-size:0.68rem;">${item.is_published ? 'Live' : 'Hidden'}</span>
+            </div>
+          </div>
+          <div class="media-item-overlay">
+            <button class="icon-btn" onclick="editGalleryItem('${item.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+            <button class="icon-btn delete" onclick="deleteGalleryItem('${item.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openUploadModal(item = null) {
+      document.getElementById('gal-id').value = item ? item.id : '';
+      document.getElementById('gal-title').value = item ? item.title : '';
+      document.getElementById('gal-category').value = item ? item.category : 'Modular Kitchens';
+      document.getElementById('gal-order').value = item ? item.display_order : (galleryList.length + 1);
+      document.getElementById('gal-published').value = item ? String(item.is_published) : 'true';
+      document.getElementById('gal-image-url').value = item ? item.image_url : '';
+      document.getElementById('gal-public-id').value = item ? (item.cloudinary_public_id || '') : '';
+
+      const preview = document.getElementById('gal-img-preview');
+      if (item && item.image_url) {
+        preview.src = item.image_url.startsWith('http') || item.image_url.startsWith('assets') ? item.image_url : '../' + item.image_url;
+        preview.style.display = 'inline-block';
+      } else {
+        preview.style.display = 'none';
+      }
+
+      document.getElementById('gallery-modal-title').textContent = item ? 'Edit Gallery Media' : 'Upload Gallery Media';
+      document.getElementById('gallery-modal').classList.add('active');
+    }
+
+    function closeGalleryModal() {
+      document.getElementById('gallery-modal').classList.remove('active');
+    }
+
+    async function handleGalleryUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const progressBox = document.getElementById('gal-upload-progress');
+      const fill = document.getElementById('gal-progress-fill');
+      const preview = document.getElementById('gal-img-preview');
+
+      progressBox.style.display = 'block';
+      fill.style.width = '0%';
+
+      try {
+        const result = await uploadToCloudinary(file, 'sve-interior/gallery', (pct) => {
+          fill.style.width = `${pct}%`;
+        });
+
+        document.getElementById('gal-image-url').value = result.url;
+        document.getElementById('gal-public-id').value = result.public_id;
+
+        if (!document.getElementById('gal-title').value) {
+          document.getElementById('gal-title').value = file.name.replace(/\.[^/.]+$/, '');
+        }
+
+        preview.src = result.url;
+        preview.style.display = 'inline-block';
+
+        showAdminToast('Media uploaded to Cloudinary!', 'success');
+      } catch (err) {
+        showAdminToast('Upload error: ' + err.message, 'error');
+      } finally {
+        progressBox.style.display = 'none';
+      }
+    }
+
+    function editGalleryItem(id) {
+      const item = galleryList.find(i => i.id === id);
+      if (item) openUploadModal(item);
+    }
+
+    async function saveGalleryItem() {
+      const id = document.getElementById('gal-id').value;
+      const title = document.getElementById('gal-title').value.trim();
+      const category = document.getElementById('gal-category').value;
+      const display_order = parseInt(document.getElementById('gal-order').value) || 1;
+      const is_published = document.getElementById('gal-published').value === 'true';
+      const image_url = document.getElementById('gal-image-url').value;
+      const cloudinary_public_id = document.getElementById('gal-public-id').value;
+
+      if (!title || !image_url) {
+        showAdminToast('Title and Media File are required.', 'error');
+        return;
+      }
+
+      const db = window.supabaseClient;
+      const payload = {
+        title, category, display_order, is_published, image_url, cloudinary_public_id
+      };
+
+      try {
+        if (id) {
+          await db.from('gallery').update(payload).eq('id', id);
+          await logAdminActivity('Updated Gallery Image', 'Gallery', id, title);
+          showAdminToast('Gallery item updated!', 'success');
+        } else {
+          await db.from('gallery').insert([payload]);
+          await logAdminActivity('Uploaded Gallery Image', 'Gallery', null, title);
+          showAdminToast('New gallery item added!', 'success');
+        }
+        closeGalleryModal();
+        loadGalleryCatalog();
+      } catch (err) {
+        showAdminToast('Failed to save gallery item: ' + err.message, 'error');
+      }
+    }
+
+    function deleteGalleryItem(id) {
+      const item = galleryList.find(i => i.id === id);
+      confirmAction('Delete Gallery Asset', `Are you sure you want to delete "${item?.title || 'this media'}"? This will delete the database record and remove it from the public website!`, async () => {
+        const db = window.supabaseClient;
+        try {
+          await db.from('gallery').delete().eq('id', id);
+          await logAdminActivity('Deleted Gallery Asset', 'Gallery', id, item?.title || '');
+          showAdminToast('Gallery image deleted from database & public site!', 'success');
+          loadGalleryCatalog();
+        } catch (e) {
+          showAdminToast('Failed to delete media: ' + e.message, 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

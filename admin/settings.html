@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Settings - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Global Website Settings</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage company contact info, social handles, SEO meta tags, & footer</p>
+          </div>
+          <button class="btn btn-primary" onclick="saveSiteSettings()"><i class="fas fa-save"></i> Save All Settings</button>
+        </div>
+
+        <div class="table-card" style="padding: 28px;">
+          <form id="settings-form">
+            <input type="hidden" id="set-id">
+
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-gold); margin-bottom: 16px; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
+              <i class="fas fa-building"></i> Company Profile & Contact Info
+            </h4>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Company Name</label>
+                <input type="text" id="set-company-name" class="form-control" value="SV Elegant Interior">
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="set-phone" class="form-control" value="+919100097311">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>WhatsApp Number (without +)</label>
+                <input type="text" id="set-whatsapp" class="form-control" value="919100097311">
+              </div>
+              <div class="form-group">
+                <label>Public Email Address</label>
+                <input type="email" id="set-email" class="form-control" value="info@svelegantinteriors.com">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Full Showroom & Office Address</label>
+              <textarea id="set-address" class="form-control">Near Venkateswara Temple, Mahadevpuram, Raavinarayana Reddy Nagar, Devender Nagar, Quthubullapur, Medchal, Telangana 500055</textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Google Maps Embed / Navigation URL</label>
+              <input type="text" id="set-maps-url" class="form-control" value="https://maps.google.com/?q=17.524771,78.413324">
+            </div>
+
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-gold); margin: 24px 0 16px; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
+              <i class="fas fa-share-alt"></i> Social Media Links
+            </h4>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fab fa-instagram"></i> Instagram URL</label>
+                <input type="text" id="set-instagram" class="form-control" value="https://instagram.com/svelegantinterior">
+              </div>
+              <div class="form-group">
+                <label><i class="fab fa-facebook"></i> Facebook URL</label>
+                <input type="text" id="set-facebook" class="form-control" value="https://facebook.com/svelegantinterior">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fab fa-youtube"></i> YouTube Channel URL</label>
+                <input type="text" id="set-youtube" class="form-control" value="https://youtube.com">
+              </div>
+              <div class="form-group">
+                <label><i class="fab fa-linkedin"></i> LinkedIn URL</label>
+                <input type="text" id="set-linkedin" class="form-control" value="https://linkedin.com">
+              </div>
+            </div>
+
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-gold); margin: 24px 0 16px; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
+              <i class="fas fa-search-dollar"></i> SEO & Meta Tags
+            </h4>
+
+            <div class="form-group">
+              <label>Website Title Tag</label>
+              <input type="text" id="set-seo-title" class="form-control" value="SV Elegant Interior | Luxury Home Interiors & Painting Services Hyderabad">
+            </div>
+
+            <div class="form-group">
+              <label>Meta Description</label>
+              <textarea id="set-meta-desc" class="form-control">SV Elegant Interior delivers luxury home interior design, modular kitchens, custom furniture, false ceilings, and professional interior/exterior painting services in Hyderabad & Medchal.</textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Keywords (Comma Separated)</label>
+              <input type="text" id="set-keywords" class="form-control" value="SV Elegant Interior, Interior Design Hyderabad, Modular Kitchens, Wardrobes, Custom Furniture, Home Painting, Quthubullapur Interior Designers">
+            </div>
+
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-gold); margin: 24px 0 16px; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">
+              <i class="fas fa-shoe-prints"></i> Footer & Branding Details
+            </h4>
+
+            <div class="form-group">
+              <label>Footer Overview Description</label>
+              <textarea id="set-footer-desc" class="form-control">SV Elegant Interior delivers luxury home interior design, custom modular kitchens, wardrobes, false ceiling, and professional painting services in Hyderabad.</textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Copyright Notice</label>
+                <input type="text" id="set-copyright" class="form-control" value="© 2026 SV Elegant Interior. All Rights Reserved.">
+              </div>
+              <div class="form-group">
+                <label>Consultation CTA Button Text</label>
+                <input type="text" id="set-cta-btn" class="form-control" value="Book Consultation">
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', loadSiteSettings);
+
+    async function loadSiteSettings() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('site_settings').select('*').limit(1).single();
+        if (data) {
+          document.getElementById('set-id').value = data.id;
+          document.getElementById('set-company-name').value = data.company_name || '';
+          document.getElementById('set-phone').value = data.phone || '';
+          document.getElementById('set-whatsapp').value = data.whatsapp || '';
+          document.getElementById('set-email').value = data.email || '';
+          document.getElementById('set-address').value = data.address || '';
+          document.getElementById('set-maps-url').value = data.google_maps_url || '';
+          document.getElementById('set-instagram').value = data.instagram_url || '';
+          document.getElementById('set-facebook').value = data.facebook_url || '';
+          document.getElementById('set-youtube').value = data.youtube_url || '';
+          document.getElementById('set-linkedin').value = data.linkedin_url || '';
+          document.getElementById('set-seo-title').value = data.seo_title || '';
+          document.getElementById('set-meta-desc').value = data.meta_description || '';
+          document.getElementById('set-keywords').value = data.keywords || '';
+          document.getElementById('set-footer-desc').value = data.footer_description || '';
+          document.getElementById('set-copyright').value = data.copyright_text || '';
+          document.getElementById('set-cta-btn').value = data.consultation_btn_text || 'Book Consultation';
+        }
+      } catch (err) {
+        console.error('Error loading settings:', err);
+      }
+    }
+
+    async function saveSiteSettings() {
+      const id = document.getElementById('set-id').value;
+      const company_name = document.getElementById('set-company-name').value.trim();
+      const phone = document.getElementById('set-phone').value.trim();
+      const whatsapp = document.getElementById('set-whatsapp').value.trim();
+      const email = document.getElementById('set-email').value.trim();
+      const address = document.getElementById('set-address').value.trim();
+      const google_maps_url = document.getElementById('set-maps-url').value.trim();
+      const instagram_url = document.getElementById('set-instagram').value.trim();
+      const facebook_url = document.getElementById('set-facebook').value.trim();
+      const youtube_url = document.getElementById('set-youtube').value.trim();
+      const linkedin_url = document.getElementById('set-linkedin').value.trim();
+      const seo_title = document.getElementById('set-seo-title').value.trim();
+      const meta_description = document.getElementById('set-meta-desc').value.trim();
+      const keywords = document.getElementById('set-keywords').value.trim();
+      const footer_description = document.getElementById('set-footer-desc').value.trim();
+      const copyright_text = document.getElementById('set-copyright').value.trim();
+      const consultation_btn_text = document.getElementById('set-cta-btn').value.trim();
+
+      const db = window.supabaseClient;
+      const payload = {
+        company_name, phone, whatsapp, email, address, google_maps_url,
+        instagram_url, facebook_url, youtube_url, linkedin_url,
+        seo_title, meta_description, keywords, footer_description,
+        copyright_text, consultation_btn_text
+      };
+
+      try {
+        if (id) {
+          await db.from('site_settings').update(payload).eq('id', id);
+        } else {
+          await db.from('site_settings').insert([payload]);
+        }
+        await logAdminActivity('Updated Website Settings', 'Settings', id, company_name);
+        showAdminToast('Website settings updated successfully!', 'success');
+      } catch (e) {
+        showAdminToast('Failed to save settings: ' + e.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>

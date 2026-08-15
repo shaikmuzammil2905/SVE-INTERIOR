@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Before & After - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Before & After Slider Management</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage interactive before vs after site execution comparison photos</p>
+          </div>
+          <button class="btn btn-primary" onclick="saveBeforeAfter()"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+
+        <div class="table-card" style="padding: 24px;">
+          <form id="ba-form">
+            <input type="hidden" id="ba-id">
+            <input type="hidden" id="ba-before-url">
+            <input type="hidden" id="ba-after-url">
+            <input type="hidden" id="ba-before-pubid">
+            <input type="hidden" id="ba-after-pubid">
+
+            <div class="form-group">
+              <label>Section Title</label>
+              <input type="text" id="ba-title" class="form-control" value="Full Home Transformation">
+            </div>
+
+            <div class="form-group">
+              <label>Description Paragraph</label>
+              <textarea id="ba-description" class="form-control">Compare the raw site condition with our finalized turnkey luxury execution.</textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Status</label>
+                <select id="ba-published" class="form-control">
+                  <option value="true">Enabled / Published</option>
+                  <option value="false">Disabled / Hidden</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row" style="margin-top: 20px;">
+              <!-- BEFORE Image Box -->
+              <div class="form-group">
+                <label style="color: var(--accent-orange); font-weight: 700;"><i class="fas fa-history"></i> BEFORE Image *</label>
+                <div class="media-upload-box" onclick="document.getElementById('before-file-input').click()">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p style="font-size: 0.88rem; color: var(--text-main);">Upload BEFORE Photo</p>
+                  <input type="file" id="before-file-input" style="display: none;" accept="image/*" onchange="uploadBaImage(event, 'before')">
+                  <div class="upload-progress-bar" id="before-upload-progress"><div class="upload-progress-fill" id="before-progress-fill"></div></div>
+                  <img src="" id="before-img-preview" class="media-preview-img" style="display: none;">
+                </div>
+              </div>
+
+              <!-- AFTER Image Box -->
+              <div class="form-group">
+                <label style="color: var(--accent-teal); font-weight: 700;"><i class="fas fa-magic"></i> AFTER RENOVATION Image *</label>
+                <div class="media-upload-box" onclick="document.getElementById('after-file-input').click()">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p style="font-size: 0.88rem; color: var(--text-main);">Upload AFTER Photo</p>
+                  <input type="file" id="after-file-input" style="display: none;" accept="image/*" onchange="uploadBaImage(event, 'after')">
+                  <div class="upload-progress-bar" id="after-upload-progress"><div class="upload-progress-fill" id="after-progress-fill"></div></div>
+                  <img src="" id="after-img-preview" class="media-preview-img" style="display: none;">
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', loadBeforeAfter);
+
+    async function loadBeforeAfter() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('before_after').select('*').limit(1).single();
+        if (data) {
+          document.getElementById('ba-id').value = data.id;
+          document.getElementById('ba-title').value = data.title || '';
+          document.getElementById('ba-description').value = data.description || '';
+          document.getElementById('ba-published').value = String(data.is_published);
+          document.getElementById('ba-before-url').value = data.before_image || '';
+          document.getElementById('ba-after-url').value = data.after_image || '';
+          document.getElementById('ba-before-pubid').value = data.before_public_id || '';
+          document.getElementById('ba-after-pubid').value = data.after_public_id || '';
+
+          if (data.before_image) {
+            const bPreview = document.getElementById('before-img-preview');
+            bPreview.src = data.before_image.startsWith('http') || data.before_image.startsWith('assets') ? data.before_image : '../' + data.before_image;
+            bPreview.style.display = 'inline-block';
+          }
+          if (data.after_image) {
+            const aPreview = document.getElementById('after-img-preview');
+            aPreview.src = data.after_image.startsWith('http') || data.after_image.startsWith('assets') ? data.after_image : '../' + data.after_image;
+            aPreview.style.display = 'inline-block';
+          }
+        }
+      } catch (err) {
+        console.error('Error loading before after section:', err);
+      }
+    }
+
+    async function uploadBaImage(event, targetType) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const progressBox = document.getElementById(`${targetType}-upload-progress`);
+      const fill = document.getElementById(`${targetType}-progress-fill`);
+      const preview = document.getElementById(`${targetType}-img-preview`);
+
+      progressBox.style.display = 'block';
+      fill.style.width = '0%';
+
+      try {
+        const result = await uploadToCloudinary(file, 'sve-interior/before-after', (pct) => {
+          fill.style.width = `${pct}%`;
+        });
+
+        document.getElementById(`ba-${targetType}-url`).value = result.url;
+        document.getElementById(`ba-${targetType}-pubid`).value = result.public_id;
+
+        preview.src = result.url;
+        preview.style.display = 'inline-block';
+
+        showAdminToast(`${targetType.toUpperCase()} photo uploaded to Cloudinary!`, 'success');
+      } catch (err) {
+        showAdminToast('Upload failed: ' + err.message, 'error');
+      } finally {
+        progressBox.style.display = 'none';
+      }
+    }
+
+    async function saveBeforeAfter() {
+      const id = document.getElementById('ba-id').value;
+      const title = document.getElementById('ba-title').value.trim();
+      const description = document.getElementById('ba-description').value.trim();
+      const is_published = document.getElementById('ba-published').value === 'true';
+      const before_image = document.getElementById('ba-before-url').value;
+      const after_image = document.getElementById('ba-after-url').value;
+      const before_public_id = document.getElementById('ba-before-pubid').value;
+      const after_public_id = document.getElementById('ba-after-pubid').value;
+
+      if (!before_image || !after_image) {
+        showAdminToast('Both BEFORE and AFTER images are required.', 'error');
+        return;
+      }
+
+      const db = window.supabaseClient;
+      const payload = {
+        title, description, is_published, before_image, after_image,
+        before_public_id, after_public_id
+      };
+
+      try {
+        if (id) {
+          await db.from('before_after').update(payload).eq('id', id);
+        } else {
+          await db.from('before_after').insert([payload]);
+        }
+        await logAdminActivity('Updated Before & After Section', 'Before-After', id, title);
+        showAdminToast('Before & After comparison updated!', 'success');
+      } catch (e) {
+        showAdminToast('Failed to save: ' + e.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>

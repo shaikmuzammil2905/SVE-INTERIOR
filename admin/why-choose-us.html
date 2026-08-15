@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Choose Us - SV Elegant Interior Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="js/admin-core.js"></script>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <main class="admin-main">
+      <div class="admin-content">
+
+        <div class="action-header">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main);">Why Choose Us Management</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage company highlights, guarantees & unique selling propositions</p>
+          </div>
+          <button class="btn btn-primary" onclick="openWcuModal()"><i class="fas fa-plus"></i> Add Highlight Item</button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Order</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="wcu-tbody">
+                <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Loading items...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Dialog -->
+  <div class="modal-overlay" id="wcu-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="wcu-modal-title">Add Highlight Item</h3>
+        <button class="modal-close" onclick="closeWcuModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="wcu-form">
+          <input type="hidden" id="wcu-id">
+
+          <div class="form-group">
+            <label>Title *</label>
+            <input type="text" id="wcu-title" class="form-control" placeholder="45-Day Delivery Guarantee" required>
+          </div>
+
+          <div class="form-group">
+            <label>Icon Class (FontAwesome)</label>
+            <input type="text" id="wcu-icon" class="form-control" value="fas fa-check-circle">
+          </div>
+
+          <div class="form-group">
+            <label>Description Paragraph *</label>
+            <textarea id="wcu-desc" class="form-control" placeholder="Detailed explanation..." required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Display Order</label>
+              <input type="number" id="wcu-order" class="form-control" value="1">
+            </div>
+            <div class="form-group">
+              <label>Publish Status</label>
+              <select id="wcu-published" class="form-control">
+                <option value="true">Published</option>
+                <option value="false">Hidden</option>
+              </select>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeWcuModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveWcuRecord()">Save Item</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let wcuItems = [];
+
+    document.addEventListener('DOMContentLoaded', loadWcuItems);
+
+    async function loadWcuItems() {
+      const db = window.supabaseClient;
+      if (!db) return;
+
+      try {
+        const { data, error } = await db.from('why_choose_us').select('*').order('display_order', { ascending: true });
+        if (error) throw error;
+        wcuItems = data || [];
+        renderWcuTable();
+      } catch (err) {
+        showAdminToast('Failed to load items: ' + err.message, 'error');
+      }
+    }
+
+    function renderWcuTable() {
+      const tbody = document.getElementById('wcu-tbody');
+      if (wcuItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No highlight items found. Add your first item!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = wcuItems.map(item => `
+        <tr>
+          <td><i class="${item.icon_class || 'fas fa-star'}" style="font-size:1.4rem; color:var(--primary-gold);"></i></td>
+          <td><strong>${item.title}</strong></td>
+          <td style="max-width:300px;">${item.description}</td>
+          <td>${item.display_order}</td>
+          <td><span class="badge ${item.is_published ? 'badge-success' : 'badge-secondary'}">${item.is_published ? 'Published' : 'Hidden'}</span></td>
+          <td>
+            <div class="table-actions">
+              <button class="icon-btn" onclick="editWcuItem('${item.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+              <button class="icon-btn delete" onclick="deleteWcuItem('${item.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openWcuModal(item = null) {
+      document.getElementById('wcu-id').value = item ? item.id : '';
+      document.getElementById('wcu-title').value = item ? item.title : '';
+      document.getElementById('wcu-icon').value = item ? (item.icon_class || 'fas fa-check-circle') : 'fas fa-check-circle';
+      document.getElementById('wcu-desc').value = item ? item.description : '';
+      document.getElementById('wcu-order').value = item ? item.display_order : (wcuItems.length + 1);
+      document.getElementById('wcu-published').value = item ? String(item.is_published) : 'true';
+
+      document.getElementById('wcu-modal-title').textContent = item ? 'Edit Highlight Item' : 'Add Highlight Item';
+      document.getElementById('wcu-modal').classList.add('active');
+    }
+
+    function closeWcuModal() {
+      document.getElementById('wcu-modal').classList.remove('active');
+    }
+
+    function editWcuItem(id) {
+      const item = wcuItems.find(i => i.id === id);
+      if (item) openWcuModal(item);
+    }
+
+    async function saveWcuRecord() {
+      const id = document.getElementById('wcu-id').value;
+      const title = document.getElementById('wcu-title').value.trim();
+      const icon_class = document.getElementById('wcu-icon').value.trim() || 'fas fa-check-circle';
+      const description = document.getElementById('wcu-desc').value.trim();
+      const display_order = parseInt(document.getElementById('wcu-order').value) || 1;
+      const is_published = document.getElementById('wcu-published').value === 'true';
+
+      if (!title || !description) {
+        showAdminToast('Title and Description are required.', 'error');
+        return;
+      }
+
+      const db = window.supabaseClient;
+      const payload = { title, icon_class, description, display_order, is_published };
+
+      try {
+        if (id) {
+          await db.from('why_choose_us').update(payload).eq('id', id);
+          await logAdminActivity('Updated Why Choose Us Item', 'Why Choose Us', id, title);
+          showAdminToast('Highlight item updated!', 'success');
+        } else {
+          await db.from('why_choose_us').insert([payload]);
+          await logAdminActivity('Created Why Choose Us Item', 'Why Choose Us', null, title);
+          showAdminToast('New item added!', 'success');
+        }
+        closeWcuModal();
+        loadWcuItems();
+      } catch (err) {
+        showAdminToast('Failed to save: ' + err.message, 'error');
+      }
+    }
+
+    function deleteWcuItem(id) {
+      const item = wcuItems.find(i => i.id === id);
+      confirmAction('Delete Highlight Item', `Are you sure you want to delete "${item?.title || 'this item'}"?`, async () => {
+        const db = window.supabaseClient;
+        try {
+          await db.from('why_choose_us').delete().eq('id', id);
+          await logAdminActivity('Deleted Why Choose Us Item', 'Why Choose Us', id, item?.title || '');
+          showAdminToast('Item deleted!', 'success');
+          loadWcuItems();
+        } catch (e) {
+          showAdminToast('Failed to delete: ' + e.message, 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
