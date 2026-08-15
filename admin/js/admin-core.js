@@ -13,25 +13,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Check if user is logged in via Supabase Auth
+// Check if user is logged in via Supabase Auth or Local Session
 async function checkAdminAuth() {
   const db = window.supabaseClient;
-  if (!db) return;
+  let loggedIn = false;
+  let userEmail = 'admin@svelegantinteriors.com';
 
-  try {
-    const { data: { session }, error } = await db.auth.getSession();
-    
-    if (error || !session) {
-      if (!window.location.pathname.endsWith('login.html')) {
-        window.location.href = 'login.html';
+  if (db) {
+    try {
+      const { data: { session } } = await db.auth.getSession();
+      if (session && session.user) {
+        loggedIn = true;
+        userEmail = session.user.email;
       }
-    } else {
-      window.currentAdminUser = session.user;
-    }
-  } catch (err) {
+    } catch (e) {}
+  }
+
+  const localSession = localStorage.getItem('sve_admin_session');
+  if (localSession) {
+    try {
+      const parsed = JSON.parse(localSession);
+      if (parsed && parsed.email) {
+        loggedIn = true;
+        userEmail = parsed.email;
+      }
+    } catch (e) {}
+  }
+
+  if (!loggedIn) {
     if (!window.location.pathname.endsWith('login.html')) {
       window.location.href = 'login.html';
     }
+  } else {
+    window.currentAdminUser = { email: userEmail };
   }
 }
 
@@ -39,8 +53,9 @@ async function checkAdminAuth() {
 async function handleAdminLogout() {
   const db = window.supabaseClient;
   if (db) {
-    await db.auth.signOut();
+    try { await db.auth.signOut(); } catch (e) {}
   }
+  localStorage.removeItem('sve_admin_session');
   showAdminToast('Logged out successfully', 'success');
   setTimeout(() => {
     window.location.href = 'login.html';
