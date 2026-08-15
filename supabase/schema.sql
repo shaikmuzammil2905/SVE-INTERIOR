@@ -299,19 +299,19 @@ ALTER TABLE public.media_assets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admins ENABLE ROW LEVEL SECURITY;
 
--- 1. Public Read Policies (Allow anyone to read published content)
+-- 1. Public Read Policies (Allow reading all content rows)
 CREATE POLICY "Public Read Site Settings" ON public.site_settings FOR SELECT USING (true);
-CREATE POLICY "Public Read Published Hero Slides" ON public.hero_slides FOR SELECT USING (is_published = true);
+CREATE POLICY "Public Read Hero Slides" ON public.hero_slides FOR SELECT USING (true);
 CREATE POLICY "Public Read About Section" ON public.about_section FOR SELECT USING (true);
 CREATE POLICY "Public Read Service Categories" ON public.service_categories FOR SELECT USING (true);
-CREATE POLICY "Public Read Published Services" ON public.services FOR SELECT USING (is_published = true);
+CREATE POLICY "Public Read Services" ON public.services FOR SELECT USING (true);
 CREATE POLICY "Public Read Project Categories" ON public.project_categories FOR SELECT USING (true);
-CREATE POLICY "Public Read Published Projects" ON public.projects FOR SELECT USING (is_published = true);
+CREATE POLICY "Public Read Projects" ON public.projects FOR SELECT USING (true);
 CREATE POLICY "Public Read Project Images" ON public.project_images FOR SELECT USING (true);
-CREATE POLICY "Public Read Published Before After" ON public.before_after FOR SELECT USING (is_published = true);
-CREATE POLICY "Public Read Published Why Choose Us" ON public.why_choose_us FOR SELECT USING (is_published = true);
-CREATE POLICY "Public Read Published Gallery" ON public.gallery FOR SELECT USING (is_published = true);
-CREATE POLICY "Public Read Published Testimonials" ON public.testimonials FOR SELECT USING (is_published = true);
+CREATE POLICY "Public Read Before After" ON public.before_after FOR SELECT USING (true);
+CREATE POLICY "Public Read Why Choose Us" ON public.why_choose_us FOR SELECT USING (true);
+CREATE POLICY "Public Read Gallery" ON public.gallery FOR SELECT USING (true);
+CREATE POLICY "Public Read Testimonials" ON public.testimonials FOR SELECT USING (true);
 CREATE POLICY "Public Read Media Assets" ON public.media_assets FOR SELECT USING (true);
 
 -- 2. Public Write Policy (Allow visitors to submit quote inquiries)

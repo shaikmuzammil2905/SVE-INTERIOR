@@ -194,9 +194,17 @@
       if (!db) return;
 
       try {
-        const { data, error } = await db.from('projects').select('*').order('display_order', { ascending: true });
+        let { data, error } = await db.from('projects').select('*').order('display_order', { ascending: true });
         if (error) throw error;
         projectsList = data || [];
+
+        if (projectsList.length === 0) {
+          const seeded = await autoSeedDatabaseIfEmpty('projects');
+          if (seeded && seeded.length > 0) {
+            projectsList = seeded;
+          }
+        }
+
         filterProjects();
       } catch (e) {
         showAdminToast('Failed to load projects: ' + e.message, 'error');
