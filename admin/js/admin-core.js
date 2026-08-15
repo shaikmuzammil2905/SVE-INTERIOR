@@ -18,16 +18,20 @@ async function checkAdminAuth() {
   const db = window.supabaseClient;
   if (!db) return;
 
-  const { data: { session }, error } = await db.auth.getSession();
-  
-  if (error || !session) {
-    // Redirect unauthenticated user to absolute admin login path
-    if (!window.location.pathname.endsWith('login.html')) {
-      window.location.href = '/admin/login.html';
+  try {
+    const { data: { session }, error } = await db.auth.getSession();
+    
+    if (error || !session) {
+      if (!window.location.pathname.endsWith('login.html')) {
+        window.location.href = 'login.html';
+      }
+    } else {
+      window.currentAdminUser = session.user;
     }
-  } else {
-    // Store user email globally
-    window.currentAdminUser = session.user;
+  } catch (err) {
+    if (!window.location.pathname.endsWith('login.html')) {
+      window.location.href = 'login.html';
+    }
   }
 }
 
@@ -39,8 +43,8 @@ async function handleAdminLogout() {
   }
   showAdminToast('Logged out successfully', 'success');
   setTimeout(() => {
-    window.location.href = '/admin/login.html';
-  }, 800);
+    window.location.href = 'login.html';
+  }, 600);
 }
 
 // Render Uniform Admin Navigation Sidebar & Topbar Header

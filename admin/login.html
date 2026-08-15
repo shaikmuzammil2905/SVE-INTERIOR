@@ -115,8 +115,8 @@
       const db = window.supabaseClient;
       if (db) {
         const { data: { session } } = await db.auth.getSession();
-        if (session) {
-          window.location.href = '/admin/index.html';
+        if (session && window.location.pathname.endsWith('login.html')) {
+          window.location.href = 'index.html';
         }
       }
     });
@@ -140,7 +140,6 @@
         let { data, error } = await db.auth.signInWithPassword({ email, password });
 
         if (error) {
-          // Attempt automatic registration if account has not been created in Supabase Auth yet
           const signUpRes = await db.auth.signUp({ email, password });
           if (!signUpRes.error && signUpRes.data?.user) {
             data = signUpRes.data;
@@ -155,8 +154,8 @@
         } else {
           showAdminToast('Welcome back Admin! Redirecting...', 'success');
           setTimeout(() => {
-            window.location.href = '/admin/index.html';
-          }, 800);
+            window.location.href = 'index.html';
+          }, 600);
         }
       } catch (err) {
         showAdminToast('Login failed: ' + err.message, 'error');
