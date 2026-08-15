@@ -110,7 +110,31 @@ async function logAdminActivity(action, module, recordId = null, details = '') {
   }
 }
 
-// Master Fallback Datasets for Automatic Seeding
+// Master Datasets for Automatic Admin Seeding
+const AUTO_SEED_SERVICES = [
+  { name: 'Interior Design', slug: 'interior-design', category: 'Residential Interiors', icon_class: 'fas fa-couch', short_description: 'End-to-end luxury interior design solutions tailored for contemporary living.', full_description: 'Comprehensive turnkey interior design covering space planning, 3D modeling, material selection, and end-to-end execution.', image_url: 'assets/images/hero1.png', display_order: 1, is_published: true, is_featured: true },
+  { name: 'Home Interiors', slug: 'home-interiors', category: 'Residential Interiors', icon_class: 'fas fa-home', short_description: 'Complete turn-key home transformations reflecting your unique lifestyle.', full_description: 'Full-house interior transformations designed around your aesthetics, family needs, and lifestyle demands.', image_url: 'assets/images/hero2.png', display_order: 2, is_published: true, is_featured: true },
+  { name: 'Modular Kitchens', slug: 'modular-kitchens', category: 'Kitchen & Storage', icon_class: 'fas fa-utensils', short_description: 'Ergonomic, modern modular kitchens with premium fittings and quartz finishes.', full_description: 'Custom acrylic, PU finish, and quartz modular kitchens equipped with Blum soft-close hardware and pull-out organizers.', image_url: 'elegant-kitchen-design.jpg.jpeg', display_order: 3, is_published: true, is_featured: true },
+  { name: 'Wardrobes', slug: 'wardrobes', category: 'Kitchen & Storage', icon_class: 'fas fa-door-closed', short_description: 'Custom built sliding and walk-in wardrobes with smart storage systems.', full_description: 'High-gloss glass sliding, walk-in closets, and modular wardrobe systems with sensory lighting.', image_url: '3d-rendering-beautiful-luxury-bedroom-suite-hotel-with-tv.jpg.jpeg', display_order: 4, is_published: true, is_featured: true },
+  { name: 'TV Units', slug: 'tv-units', category: 'Residential Interiors', icon_class: 'fas fa-tv', short_description: 'Luxury wall entertainment consoles featuring cove lighting and marble backdrops.', full_description: 'Custom entertainment centers with fluted wood paneling, marble backdrops, floating shelves, and cable management.', image_url: 'modern-living-room-with-big-screen-tv.jpg.jpeg', display_order: 5, is_published: true, is_featured: true },
+  { name: 'False Ceiling', slug: 'false-ceiling', category: 'Ceilings & Decor', icon_class: 'fas fa-border-all', short_description: 'Designer gypsum and wooden ceiling layouts with ambient LED lighting.', full_description: 'Gypsum plasterboards, wooden raft ceilings, cove lighting channels, and magnetic track light fixtures.', image_url: 'ceiling-design-3d-rendering.jpg.jpeg', display_order: 6, is_published: true, is_featured: false },
+  { name: 'Wall Paneling', slug: 'wall-paneling', category: 'Ceilings & Decor', icon_class: 'fas fa-th-large', short_description: 'Acoustic and decorative louvers, fluted panels, and upholstered accent walls.', full_description: 'Textured PVC louvers, charcoal acoustic panels, fabric upholstery, and wooden wall cladding.', image_url: '3d-render-modern-tv-wall-decoration-interior-design-inspiration.jpg copy.jpeg', display_order: 7, is_published: true, is_featured: false },
+  { name: 'Wooden Flooring', slug: 'wooden-flooring', category: 'Residential Interiors', icon_class: 'fas fa-square', short_description: 'High-grade hardwood and laminate flooring providing warmth and elegance.', full_description: 'Scratch-resistant laminate wood planks, engineered oak flooring, and outdoor deck tiling.', image_url: 'modern-light-bedroom-with-wooden-furniture-scandinavian-style-3d-rendering.jpg.jpeg', display_order: 8, is_published: true, is_featured: false },
+  { name: 'Custom Furniture', slug: 'custom-furniture', category: 'Residential Interiors', icon_class: 'fas fa-chair', short_description: 'Bespoke hand-crafted sofas, dining tables, and plush armchairs.', full_description: 'Hand-crafted solid wood dining sets, velvet accent lounge chairs, and custom modular sofas.', image_url: 'furniture-assembly-worker-standing-reading-instruction-using-tape-measure-worker-tools.jpg.jpeg', display_order: 9, is_published: true, is_featured: false },
+  { name: 'Space Planning', slug: 'space-planning', category: 'Residential Interiors', icon_class: 'fas fa-drafting-compass', short_description: 'Architectural space optimization ensuring maximum functionality and aesthetic flow.', full_description: 'Professional layout drafting, traffic flow optimization, lighting grid mapping, and ergonomic space utility.', image_url: 'man-renovating-his-house-with-design-space.jpg.jpeg', display_order: 10, is_published: true, is_featured: false },
+  { name: 'Interior Renovation', slug: 'interior-renovation', category: 'Residential Interiors', icon_class: 'fas fa-tools', short_description: 'Complete makeover services upgrading legacy spaces into contemporary havens.', full_description: 'Full structural and cosmetic renovation of aging apartments, villas, and bathrooms.', image_url: 'room-being-remodeled-with-contractors.jpg.jpeg', display_order: 11, is_published: true, is_featured: false },
+  { name: 'Home Painting', slug: 'home-painting', category: 'Painting & Finish', icon_class: 'fas fa-paint-roller', short_description: 'Premium interior and exterior wall painting with smooth dust-free finishes.', full_description: 'Dust-free motorized sanding, primer coat application, and royal luxury emulsion finishes.', image_url: 'assets/images/painting.png', display_order: 12, is_published: true, is_featured: true },
+  { name: 'Interior Painting', slug: 'interior-painting', category: 'Painting & Finish', icon_class: 'fas fa-fill-drip', short_description: 'Royal luxury washable emulsions, texture coatings, and metallic accents.', full_description: 'Washable velvet emulsions, Venetian plaster textures, metallic accent walls, and stencil patterns.', image_url: 'masaking-blue-paint-with-roller-brush-dipped-white-paint-handyman-renovating-apartment-redecoration-home-construction-while-renovating-improving-repair-decorating.jpg.jpeg', display_order: 13, is_published: true, is_featured: false },
+  { name: 'Exterior Painting', slug: 'exterior-painting', category: 'Painting & Finish', icon_class: 'fas fa-sun', short_description: 'Weather-proof exterior coatings protecting structures against harsh elements.', full_description: 'All-weather silicone and elastomeric exterior shield coatings guarding against UV and rain damage.', image_url: 'photography-professional-painter-pain-house.jpg.jpeg', display_order: 14, is_published: true, is_featured: false },
+  { name: 'Commercial Painting', slug: 'commercial-painting', category: 'Painting & Finish', icon_class: 'fas fa-building', short_description: 'Scalable corporate painting solutions with minimal operational downtime.', full_description: 'Fast-track anti-microbial paint application for IT parks, retail showrooms, and hospitality setups.', image_url: 'professional-painter-painting-wall-with-paint-roller.jpg.jpeg', display_order: 15, is_published: true, is_featured: false },
+  { name: 'Office Interiors', slug: 'office-interiors', category: 'Commercial & Office', icon_class: 'fas fa-briefcase', short_description: 'Modern ergonomic office layouts boosting productivity and brand prestige.', full_description: 'Corporate executive cabins, modular open workstations, acoustic conference rooms, and reception desks.', image_url: 'assets/images/office.png', display_order: 16, is_published: true, is_featured: true },
+  { name: 'Villa Interiors', slug: 'villa-interiors', category: 'Residential Interiors', icon_class: 'fas fa-hotel', short_description: 'Grand scale luxury villa interiors incorporating double-height aesthetics.', full_description: 'Turnkey double-height living spaces, grand chandelier ceilings, custom staircases, and outdoor lounge areas.', image_url: 'residential-interior-design.jpg.jpeg', display_order: 17, is_published: true, is_featured: false },
+  { name: 'Apartment Interiors', slug: 'apartment-interiors', category: 'Residential Interiors', icon_class: 'fas fa-city', short_description: 'Smart, space-efficient apartment interior designs maximizing comfort.', full_description: 'Compact luxury apartment interiors utilizing multi-functional furniture and concealed storage.', image_url: 'luxury-modern-apartment-with-comfortable-pillow-decor-generated-by-ai.jpg.jpeg', display_order: 18, is_published: true, is_featured: false },
+  { name: 'False Ceiling Designs', slug: 'false-ceiling-designs', category: 'Ceilings & Decor', icon_class: 'fas fa-layer-group', short_description: 'Multi-tiered custom ceiling concepts with integrated magnetic tracks.', full_description: 'Architectural ceiling drop layers, CNC lattice cutouts, and concealed strip lighting setups.', image_url: 'ceiling-with-lights-large-window.jpg.jpeg', display_order: 19, is_published: true, is_featured: false },
+  { name: 'Lighting Design', slug: 'lighting-design', category: 'Ceilings & Decor', icon_class: 'fas fa-lightbulb', short_description: 'Architectural lighting plans creating distinct mood layers and highlights.', full_description: 'Warm ambient cove lighting, architectural spotlighting, pendant installations, and smart dimming controls.', image_url: 'clear-tv-clean-walls-warm-light-tv-cabinet-wine-bottle-8-pieces-hdar-916-ar-32-style-raw-v-6-job-id.jpg.jpeg', display_order: 20, is_published: true, is_featured: false },
+  { name: '3D Interior Visualization', slug: '3d-interior-visualization', category: 'Residential Interiors', icon_class: 'fas fa-cube', short_description: 'Photorealistic 3D renders and virtual walkthroughs before physical execution.', full_description: 'High-definition 3D renders and 360-degree virtual walkthroughs letting clients experience their home before construction.', image_url: '3d-rendering-luxurious-bedroom-interior.jpg.jpeg', display_order: 21, is_published: true, is_featured: false }
+];
+
 const AUTO_SEED_PROJECTS = [
   { title: 'Elegant Luxury Kitchen Design', slug: 'elegant-luxury-kitchen-design', category_name: 'Modular Kitchens', description: 'Turnkey modular kitchen with quartz countertop and soft-close cabinetry.', location: 'Gachibowli, Hyderabad', completion_date: '2026', project_type: 'Luxury Residential', featured_image: 'elegant-kitchen-design.jpg.jpeg', display_order: 1, is_published: true, is_featured: true },
   { title: 'Modern Pink Modular Kitchen', slug: 'modern-pink-modular-kitchen', category_name: 'Modular Kitchens', description: 'Contemporary pink and gold accent modular kitchen suite.', location: 'Jubilee Hills, Hyderabad', completion_date: '2026', project_type: 'Luxury Residential', featured_image: 'elegant-modern-pink-kitchen-interior-design.jpg.jpeg', display_order: 2, is_published: true, is_featured: true },
@@ -167,7 +191,16 @@ const AUTO_SEED_PROJECTS = [
   { title: 'Wall Roller Painting Craftsmanship', slug: 'wall-roller-painting-craftsmanship', category_name: 'Painting & Execution', description: 'Flawless corner edging and smooth roller wall finish.', location: 'Bachupally, Hyderabad', completion_date: '2026', project_type: 'Painting Project', featured_image: 'woman-paints-wall-with-roller.jpg.jpeg', display_order: 53, is_published: true, is_featured: false }
 ];
 
-// Automatic Seeding Function
+const AUTO_SEED_GALLERY = AUTO_SEED_PROJECTS.map((p, idx) => ({
+  title: p.title,
+  category: p.category_name,
+  service_id: p.slug,
+  image_url: p.featured_image,
+  display_order: idx + 1,
+  is_published: true
+}));
+
+// Automatic Seeding Function for All Tables
 async function autoSeedDatabaseIfEmpty(tableName) {
   if (!db) return [];
 
@@ -175,6 +208,14 @@ async function autoSeedDatabaseIfEmpty(tableName) {
     if (tableName === 'projects') {
       console.log('Seeding 53 default website projects into Supabase...');
       const { data, error } = await db.from('projects').insert(AUTO_SEED_PROJECTS).select();
+      if (!error) return data || [];
+    } else if (tableName === 'services') {
+      console.log('Seeding 21 default website services into Supabase...');
+      const { data, error } = await db.from('services').insert(AUTO_SEED_SERVICES).select();
+      if (!error) return data || [];
+    } else if (tableName === 'gallery') {
+      console.log('Seeding 53 default website gallery media into Supabase...');
+      const { data, error } = await db.from('gallery').insert(AUTO_SEED_GALLERY).select();
       if (!error) return data || [];
     }
   } catch (err) {

@@ -137,9 +137,17 @@
       if (!db) return;
 
       try {
-        const { data, error } = await db.from('gallery').select('*').order('display_order', { ascending: true });
+        let { data, error } = await db.from('gallery').select('*').order('display_order', { ascending: true });
         if (error) throw error;
         galleryList = data || [];
+
+        if (galleryList.length === 0) {
+          const seeded = await autoSeedDatabaseIfEmpty('gallery');
+          if (seeded && seeded.length > 0) {
+            galleryList = seeded;
+          }
+        }
+
         filterGallery();
       } catch (e) {
         showAdminToast('Failed to load gallery: ' + e.message, 'error');

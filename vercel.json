@@ -1,0 +1,21 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" },
+    { "source": "/admin/login", "destination": "/admin/login.html" },
+    { "source": "/admin/hero", "destination": "/admin/hero.html" },
+    { "source": "/admin/about", "destination": "/admin/about.html" },
+    { "source": "/admin/services", "destination": "/admin/services.html" },
+    { "source": "/admin/projects", "destination": "/admin/projects.html" },
+    { "source": "/admin/before-after", "destination": "/admin/before-after.html" },
+    { "source": "/admin/why-choose-us", "destination": "/admin/why-choose-us.html" },
+    { "source": "/admin/gallery", "destination": "/admin/gallery.html" },
+    { "source": "/admin/testimonials", "destination": "/admin/testimonials.html" },
+    { "source": "/admin/contact-requests", "destination": "/admin/contact-requests.html" },
+    { "source": "/admin/media-library", "destination": "/admin/media-library.html" },
+    { "source": "/admin/settings", "destination": "/admin/settings.html" },
+    { "source": "/admin/activity-logs", "destination": "/admin/activity-logs.html" }
+  ]
+}

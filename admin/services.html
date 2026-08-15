@@ -186,9 +186,17 @@
       if (!db) return;
 
       try {
-        const { data, error } = await db.from('services').select('*').order('display_order', { ascending: true });
+        let { data, error } = await db.from('services').select('*').order('display_order', { ascending: true });
         if (error) throw error;
         servicesList = data || [];
+
+        if (servicesList.length === 0) {
+          const seeded = await autoSeedDatabaseIfEmpty('services');
+          if (seeded && seeded.length > 0) {
+            servicesList = seeded;
+          }
+        }
+
         filterServices();
       } catch (e) {
         showAdminToast('Failed to load services: ' + e.message, 'error');
