@@ -2,6 +2,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    { "source": "/index.html/admin", "destination": "/admin/index.html" },
+    { "source": "/index.html/admin/", "destination": "/admin/index.html" },
+    { "source": "/index.html/admin/:path*", "destination": "/admin/:path*" },
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/admin/", "destination": "/admin/index.html" },
     { "source": "/admin/login", "destination": "/admin/login.html" },
