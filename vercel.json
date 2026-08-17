@@ -1,1 +1,8 @@
-{}
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/admin.html", "destination": "/admin/login.html", "permanent": false },
+    { "source": "/admin", "destination": "/admin/login.html", "permanent": false }
+  ]
+}
