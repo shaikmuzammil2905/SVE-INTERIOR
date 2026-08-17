@@ -172,6 +172,13 @@
       let db = null;
       try {
         db = getSupabaseClient();
+        if (db) {
+          db.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session && session.user) {
+              window.location.href = '/admin/index.html';
+            }
+          });
+        }
       } catch (e) {
         console.error('Supabase client init error:', e);
       }
