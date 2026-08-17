@@ -12,8 +12,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     await checkAdminAuth();
     renderAdminShell();
     updateUnreadCountBadge();
+    const wrapper = document.querySelector('.admin-wrapper');
+    if (wrapper) wrapper.classList.add('ready');
   } else {
-    // If on login page and an active valid Supabase session exists, redirect to dashboard
+    // If on login page and an active valid Supabase session exists, redirect smoothly to dashboard
     const db = getSupabaseClient();
     if (db) {
       try {
@@ -161,12 +163,16 @@ function renderAdminShell() {
   // Inject sidebar & topbar if containers exist
   const wrapper = document.querySelector('.admin-wrapper');
   if (wrapper) {
-    wrapper.insertAdjacentHTML('afterbegin', sidebarHTML);
+    if (!document.getElementById('admin-sidebar')) {
+      wrapper.insertAdjacentHTML('afterbegin', sidebarHTML);
+    }
 
     const main = document.querySelector('.admin-main');
-    if (main) {
+    if (main && !document.querySelector('.admin-topbar')) {
       main.insertAdjacentHTML('afterbegin', topbarHTML);
     }
+
+    wrapper.classList.add('ready');
   }
 }
 
