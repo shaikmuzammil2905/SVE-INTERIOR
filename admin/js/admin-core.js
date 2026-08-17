@@ -248,8 +248,29 @@ function confirmAction(title, message, onConfirm) {
   modal.classList.add('active');
 }
 
-function closeConfirmModal() {
-  const modal = document.getElementById('admin-confirm-modal');
-  if (modal) modal.classList.remove('active');
+// Global Safe Error Catchers - Prevents Blank White Screens
+window.addEventListener('error', (event) => {
+  console.error('Unhandled Admin Error:', event.error || event.message);
+  displayGlobalAdminError(event.message || 'An unexpected runtime error occurred.');
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled Promise Rejection:', event.reason);
+  const msg = event.reason?.message || String(event.reason || 'Unhandled Promise error');
+  displayGlobalAdminError(msg);
+});
+
+function displayGlobalAdminError(message) {
+  let box = document.getElementById('admin-global-error-banner');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'admin-global-error-banner';
+    box.style.cssText = 'position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:99999; background:#7f1d1d; color:#fca5a5; padding:12px 24px; border-radius:8px; border:1px solid #ef4444; font-family:sans-serif; font-size:0.88rem; box-shadow:0 10px 25px rgba(0,0,0,0.5); max-width:90vw; text-align:center; display:flex; align-items:center; gap:10px;';
+    if (document.body) document.body.appendChild(box);
+  }
+  if (box) {
+    box.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span><strong>Admin Notice:</strong> ${message}</span>`;
+    setTimeout(() => { if (box) box.remove(); }, 8000);
+  }
 }
 
