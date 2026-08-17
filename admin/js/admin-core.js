@@ -12,6 +12,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     await checkAdminAuth();
     renderAdminShell();
     updateUnreadCountBadge();
+  } else {
+    // If on login page and an active valid Supabase session exists, redirect to dashboard
+    const db = getSupabaseClient();
+    if (db) {
+      try {
+        const { data: { session } } = await db.auth.getSession();
+        if (session && session.user && session.user.email) {
+          window.location.replace('/admin/index.html');
+        }
+      } catch (e) {}
+    }
   }
 });
 
