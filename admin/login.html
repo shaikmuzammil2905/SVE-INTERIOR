@@ -141,6 +141,22 @@
       }
     }
 
+    // Global Auth State Change Listener
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const db = getSupabaseClient();
+        if (db) {
+          db.auth.onAuthStateChange((event, session) => {
+            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session && session.user) {
+              window.location.replace('/admin/index.html');
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Auth state listener init error:', e);
+      }
+    });
+
     document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const alertBox = document.getElementById('login-alert-box');
@@ -172,13 +188,6 @@
       let db = null;
       try {
         db = getSupabaseClient();
-        if (db) {
-          db.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session && session.user) {
-              window.location.href = '/admin/index.html';
-            }
-          });
-        }
       } catch (e) {
         console.error('Supabase client init error:', e);
       }
@@ -205,7 +214,7 @@
 
         if (data && data.session) {
           displayLoginSuccess('Welcome Admin! Redirecting to Dashboard...');
-          window.location.href = '/admin/index.html';
+          window.location.replace('/admin/index.html');
         } else {
           displayLoginError('Login error: Session could not be established.');
           resetBtn();
