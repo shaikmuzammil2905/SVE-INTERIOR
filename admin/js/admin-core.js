@@ -14,17 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateUnreadCountBadge();
     const wrapper = document.querySelector('.admin-wrapper');
     if (wrapper) wrapper.classList.add('ready');
-  } else {
-    // If on login page and an active valid Supabase session exists, redirect smoothly to dashboard
-    const db = getSupabaseClient();
-    if (db) {
-      try {
-        const { data: { session } } = await db.auth.getSession();
-        if (session && session.user && session.user.email) {
-          window.location.replace('/admin/index.html');
-        }
-      } catch (e) {}
-    }
   }
 });
 
