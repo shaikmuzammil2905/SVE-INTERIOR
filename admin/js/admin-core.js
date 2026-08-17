@@ -37,7 +37,7 @@ async function checkAdminAuth() {
 
   if (!loggedIn) {
     if (!isLoginPage()) {
-      window.location.href = 'login.html';
+      window.location.href = '/admin/login.html';
     }
   } else {
     window.currentAdminUser = { email: userEmail };
@@ -53,7 +53,7 @@ async function handleAdminLogout() {
   localStorage.removeItem('sve_admin_session');
   showAdminToast('Logged out successfully', 'success');
   setTimeout(() => {
-    window.location.href = 'login.html';
+    window.location.href = '/admin/login.html';
   }, 600);
 }
 
