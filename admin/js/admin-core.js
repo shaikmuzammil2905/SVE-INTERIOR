@@ -47,7 +47,8 @@ async function checkAdminAuth() {
 
   if (!loggedIn) {
     if (!isLoginPage()) {
-      window.location.href = '/admin/login.html';
+      console.warn('[ADMIN AUTH] No active session. Redirecting to login...');
+      window.location.replace('/admin/login.html');
     }
   } else {
     window.currentAdminUser = { email: userEmail };
