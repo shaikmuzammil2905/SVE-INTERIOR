@@ -102,7 +102,7 @@ function renderAdminShell() {
     <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
     <aside class="admin-sidebar" id="admin-sidebar">
       <div class="sidebar-header">
-        <img src="../assets/images/logo.png" alt="SV Elegant Interior">
+        <img src="/assets/images/logo.png" alt="SV Elegant Interior">
         <div>
           <div class="brand-text">SV Elegant</div>
           <div class="brand-subtitle">CMS Admin Panel</div>
@@ -152,7 +152,7 @@ function renderAdminShell() {
       </div>
 
       <div class="topbar-right">
-        <a href="../index.html" target="_blank" class="btn-visit-site">
+        <a href="/index.html" target="_blank" class="btn-visit-site">
           <i class="fas fa-external-link-alt"></i>
           <span>View Public Site</span>
         </a>
