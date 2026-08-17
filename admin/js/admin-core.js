@@ -9,11 +9,11 @@ function isLoginPage() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!isLoginPage()) {
-    await checkAdminAuth();
     renderAdminShell();
-    updateUnreadCountBadge();
     const wrapper = document.querySelector('.admin-wrapper');
     if (wrapper) wrapper.classList.add('ready');
+    await checkAdminAuth();
+    updateUnreadCountBadge();
   }
 });
 
