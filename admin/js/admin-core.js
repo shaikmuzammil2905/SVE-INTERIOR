@@ -25,7 +25,15 @@ async function checkAdminAuth() {
 
   if (db) {
     try {
-      const { data: { session } } = await db.auth.getSession();
+      let { data: { session } } = await db.auth.getSession();
+      
+      // Retry after brief delay if Supabase client is still restoring session from storage
+      if (!session) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        const retryRes = await db.auth.getSession();
+        session = retryRes.data?.session;
+      }
+
       if (session && session.user && session.user.email) {
         loggedIn = true;
         userEmail = session.user.email;
