@@ -141,18 +141,6 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const db = getSupabaseClient();
-        if (db) {
-          const { data: { session } } = await db.auth.getSession();
-          if (session && session.user) {
-            window.location.href = 'index.html';
-          }
-        }
-      } catch (e) {}
-    });
-
     document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const alertBox = document.getElementById('login-alert-box');

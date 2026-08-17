@@ -4,7 +4,7 @@
 
 function isLoginPage() {
   const p = window.location.pathname.toLowerCase();
-  return p.endsWith('login.html') || p.endsWith('/login') || p === '/admin/login';
+  return p.includes('login') || p.endsWith('login.html') || p.endsWith('/login') || p === '/admin/login';
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -12,20 +12,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     await checkAdminAuth();
     renderAdminShell();
     updateUnreadCountBadge();
-  } else {
-    // If on login page, check if already authenticated in Supabase
-    const db = getSupabaseClient();
-    if (db) {
-      const { data: { session } } = await db.auth.getSession();
-      if (session && session.user) {
-        window.location.href = 'index.html';
-      }
-    }
   }
 });
 
 // Check if user is logged in via Supabase Auth ONLY
 async function checkAdminAuth() {
+  if (isLoginPage()) return;
+
   const db = getSupabaseClient();
   let loggedIn = false;
   let userEmail = '';
@@ -33,7 +26,7 @@ async function checkAdminAuth() {
   if (db) {
     try {
       const { data: { session } } = await db.auth.getSession();
-      if (session && session.user) {
+      if (session && session.user && session.user.email) {
         loggedIn = true;
         userEmail = session.user.email;
       }
