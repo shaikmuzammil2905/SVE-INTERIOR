@@ -993,4 +993,38 @@ textarea.form-control {
     padding: 24px 18px;
     margin: 12px;
   }
+
+  .admin-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background: var(--bg-card);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+
+  .modal-overlay {
+    padding: 10px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .modal-container {
+    max-height: 88vh;
+    overflow-y: auto;
+    margin-top: 20px;
+  }
+
+  .admin-toast {
+    bottom: 20px !important;
+    left: 16px !important;
+    right: 16px !important;
+    max-width: calc(100vw - 32px) !important;
+    font-size: 0.85rem !important;
+    padding: 10px 14px !important;
+  }
+
+  .media-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+    gap: 10px !important;
+  }
 }
