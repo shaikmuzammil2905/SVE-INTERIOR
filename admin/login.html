@@ -199,8 +199,8 @@
         if (data && data.session) {
           displayLoginSuccess('Welcome Admin! Redirecting to Dashboard...');
           setTimeout(() => {
-            window.location.href = '/admin/index.html';
-          }, 300);
+            window.location.replace('/admin/index.html');
+          }, 200);
         } else {
           displayLoginError('Login error: Session could not be established.');
           resetBtn();
