@@ -136,6 +136,13 @@
         return;
       }
 
+      const resetBtn = () => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
+        }
+      };
+
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Authenticating with Supabase...`;
@@ -144,21 +151,21 @@
       const db = getSupabaseClient();
       if (!db) {
         showAdminToast('Database client connection error. Please refresh.', 'error');
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
-        }
+        resetBtn();
         return;
       }
 
       try {
-        const { data, error } = await db.auth.signInWithPassword({ email, password });
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Connection timed out. Please check your internet connection.')), 12000)
+        );
+
+        const loginPromise = db.auth.signInWithPassword({ email, password });
+        const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
+
         if (error) {
           showAdminToast('Authentication failed: ' + error.message, 'error');
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
-          }
+          resetBtn();
           return;
         }
 
@@ -169,17 +176,11 @@
           }, 400);
         } else {
           showAdminToast('Login error: Session could not be established.', 'error');
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
-          }
+          resetBtn();
         }
       } catch (err) {
         showAdminToast('Login error: ' + (err.message || 'Authentication failed'), 'error');
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
-        }
+        resetBtn();
       }
     });
 

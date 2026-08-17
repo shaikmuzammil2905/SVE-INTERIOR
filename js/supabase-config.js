@@ -119,18 +119,6 @@ async function logAdminActivity(action, module, recordId = null, details = '') {
   }
 }
 
-    await db.from('activity_logs').insert([{
-      admin_email: adminEmail,
-      action: action,
-      module: module,
-      record_id: recordId ? String(recordId) : null,
-      details: details
-    }]);
-  } catch (err) {
-    console.error('Error logging activity:', err);
-  }
-}
-
 // Master Datasets for Automatic Admin Seeding
 const AUTO_SEED_SERVICES = [
   { name: 'Interior Design', slug: 'interior-design', category: 'Residential Interiors', icon_class: 'fas fa-couch', short_description: 'End-to-end luxury interior design solutions tailored for contemporary living.', full_description: 'Comprehensive turnkey interior design covering space planning, 3D modeling, material selection, and end-to-end execution.', image_url: 'assets/images/hero1.png', display_order: 1, is_published: true, is_featured: true },
