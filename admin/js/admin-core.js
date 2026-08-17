@@ -188,7 +188,7 @@ async function updateUnreadCountBadge() {
   try {
     const { count, error } = await db
       .from('contact_requests')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact' })
       .eq('is_read', false);
 
     if (!error && count > 0) {

@@ -161,13 +161,13 @@ async function syncPublicDataFromSupabase() {
 
   try {
     const [settingsRes, heroRes, aboutRes, servicesRes, projectsRes, galleryRes, baRes, wcuRes, testRes] = await Promise.all([
-      db.from('site_settings').select('*').limit(1).single(),
+      db.from('site_settings').select('*').limit(1).maybeSingle(),
       db.from('hero_slides').select('*').eq('is_published', true).order('display_order', { ascending: true }),
-      db.from('about_section').select('*').limit(1).single(),
+      db.from('about_section').select('*').limit(1).maybeSingle(),
       db.from('services').select('*').eq('is_published', true).order('display_order', { ascending: true }),
       db.from('projects').select('*').eq('is_published', true).order('display_order', { ascending: true }),
       db.from('gallery').select('*').eq('is_published', true).order('display_order', { ascending: true }),
-      db.from('before_after').select('*').eq('is_published', true).order('display_order', { ascending: true }).limit(1).single(),
+      db.from('before_after').select('*').eq('is_published', true).order('display_order', { ascending: true }).limit(1).maybeSingle(),
       db.from('why_choose_us').select('*').eq('is_published', true).order('display_order', { ascending: true }),
       db.from('testimonials').select('*').eq('is_published', true).order('display_order', { ascending: true })
     ]);

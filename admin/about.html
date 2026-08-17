@@ -100,7 +100,7 @@
       if (!db) return;
 
       try {
-        const { data, error } = await db.from('about_section').select('*').limit(1).single();
+        const { data, error } = await db.from('about_section').select('*').limit(1).maybeSingle();
         if (data) {
           document.getElementById('about-id').value = data.id;
           document.getElementById('about-heading').value = data.heading || '';

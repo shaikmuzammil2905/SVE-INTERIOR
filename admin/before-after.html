@@ -95,7 +95,7 @@
       if (!db) return;
 
       try {
-        const { data, error } = await db.from('before_after').select('*').limit(1).single();
+        const { data, error } = await db.from('before_after').select('*').limit(1).maybeSingle();
         if (data) {
           document.getElementById('ba-id').value = data.id;
           document.getElementById('ba-title').value = data.title || '';
