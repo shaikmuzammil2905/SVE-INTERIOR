@@ -81,6 +81,8 @@
         <span class="forgot-link" onclick="openForgotModal()">Forgot Password?</span>
       </div>
 
+      <div id="login-alert-box" style="display:none; margin-top:14px; font-size:0.85rem; padding:10px 14px; border-radius:6px; text-align:center;"></div>
+
       <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 14px; padding: 12px;" id="login-submit-btn">
         <i class="fas fa-sign-in-alt"></i> Sign In to Dashboard
       </button>
@@ -111,20 +113,51 @@
   </div>
 
   <script>
+    function displayLoginError(msg) {
+      const alertBox = document.getElementById('login-alert-box');
+      if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+        alertBox.style.border = '1px solid #ef4444';
+        alertBox.style.color = '#f87171';
+        alertBox.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${msg}`;
+      }
+      if (typeof showAdminToast === 'function') {
+        showAdminToast(msg, 'error');
+      }
+    }
+
+    function displayLoginSuccess(msg) {
+      const alertBox = document.getElementById('login-alert-box');
+      if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+        alertBox.style.border = '1px solid #10b981';
+        alertBox.style.color = '#34d399';
+        alertBox.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+      }
+      if (typeof showAdminToast === 'function') {
+        showAdminToast(msg, 'success');
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
-      const db = getSupabaseClient();
-      if (db) {
-        try {
+      try {
+        const db = getSupabaseClient();
+        if (db) {
           const { data: { session } } = await db.auth.getSession();
           if (session && session.user) {
             window.location.href = 'index.html';
           }
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
     });
 
     document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const alertBox = document.getElementById('login-alert-box');
+      if (alertBox) alertBox.style.display = 'none';
+
       const emailInput = document.getElementById('admin-email');
       const passInput = document.getElementById('admin-password');
       const email = emailInput ? emailInput.value.trim() : '';
@@ -132,7 +165,7 @@
       const submitBtn = document.getElementById('login-submit-btn');
 
       if (!email || !password) {
-        showAdminToast('Please enter both admin email and password.', 'error');
+        displayLoginError('Please enter both admin email and password.');
         return;
       }
 
@@ -148,38 +181,44 @@
         submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Authenticating with Supabase...`;
       }
 
-      const db = getSupabaseClient();
+      let db = null;
+      try {
+        db = getSupabaseClient();
+      } catch (e) {
+        console.error('Supabase client init error:', e);
+      }
+
       if (!db) {
-        showAdminToast('Database client connection error. Please refresh.', 'error');
+        displayLoginError('Database client connection error. Please refresh the page.');
         resetBtn();
         return;
       }
 
       try {
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Connection timed out. Please check your internet connection.')), 12000)
+          setTimeout(() => reject(new Error('Connection timed out. Please check your network.')), 10000)
         );
 
         const loginPromise = db.auth.signInWithPassword({ email, password });
         const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
 
         if (error) {
-          showAdminToast('Authentication failed: ' + error.message, 'error');
+          displayLoginError('Authentication failed: ' + error.message);
           resetBtn();
           return;
         }
 
         if (data && data.session) {
-          showAdminToast('Welcome Admin! Redirecting to Dashboard...', 'success');
+          displayLoginSuccess('Welcome Admin! Redirecting to Dashboard...');
           setTimeout(() => {
             window.location.href = 'index.html';
-          }, 400);
+          }, 300);
         } else {
-          showAdminToast('Login error: Session could not be established.', 'error');
+          displayLoginError('Login error: Session could not be established.');
           resetBtn();
         }
       } catch (err) {
-        showAdminToast('Login error: ' + (err.message || 'Authentication failed'), 'error');
+        displayLoginError('Login error: ' + (err.message || 'Authentication failed'));
         resetBtn();
       }
     });
