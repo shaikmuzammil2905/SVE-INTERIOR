@@ -1676,3 +1676,51 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
+
+/* --- Mobile Compatibility Adjustments (320px - 480px) --- */
+@media (max-width: 576px) {
+  .category-filter-tabs, .filter-tabs {
+    justify-content: flex-start;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 24px;
+    gap: 8px;
+  }
+
+  .category-filter-btn, .filter-btn {
+    flex-shrink: 0;
+    padding: 8px 18px;
+    font-size: 0.85rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .hero-headline {
+    font-size: 1.85rem;
+    line-height: 1.25;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .contact-info-card, .contact-form-card {
+    padding: 24px 18px;
+  }
+
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
