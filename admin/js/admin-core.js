@@ -2,22 +2,33 @@
    SV Elegant Interior - Admin Core Engine & Shell Provider
    ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // If page is not login page, check authentication session
-  const isLoginPage = window.location.pathname.endsWith('login.html');
+function isLoginPage() {
+  const p = window.location.pathname.toLowerCase();
+  return p.endsWith('login.html') || p.endsWith('/login') || p === '/admin/login';
+}
 
-  if (!isLoginPage) {
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!isLoginPage()) {
     await checkAdminAuth();
     renderAdminShell();
     updateUnreadCountBadge();
+  } else {
+    // If on login page, check if already authenticated in Supabase
+    const db = getSupabaseClient();
+    if (db) {
+      const { data: { session } } = await db.auth.getSession();
+      if (session && session.user) {
+        window.location.href = 'index.html';
+      }
+    }
   }
 });
 
-// Check if user is logged in via Supabase Auth or Local Session
+// Check if user is logged in via Supabase Auth ONLY
 async function checkAdminAuth() {
-  const db = window.supabaseClient;
+  const db = getSupabaseClient();
   let loggedIn = false;
-  let userEmail = 'admin@svelegantinteriors.com';
+  let userEmail = '';
 
   if (db) {
     try {
@@ -26,22 +37,13 @@ async function checkAdminAuth() {
         loggedIn = true;
         userEmail = session.user.email;
       }
-    } catch (e) {}
-  }
-
-  const localSession = localStorage.getItem('sve_admin_session');
-  if (localSession) {
-    try {
-      const parsed = JSON.parse(localSession);
-      if (parsed && parsed.email) {
-        loggedIn = true;
-        userEmail = parsed.email;
-      }
-    } catch (e) {}
+    } catch (e) {
+      console.error('Session retrieval error:', e);
+    }
   }
 
   if (!loggedIn) {
-    if (!window.location.pathname.endsWith('login.html')) {
+    if (!isLoginPage()) {
       window.location.href = 'login.html';
     }
   } else {
@@ -51,7 +53,7 @@ async function checkAdminAuth() {
 
 // Admin Logout
 async function handleAdminLogout() {
-  const db = window.supabaseClient;
+  const db = getSupabaseClient();
   if (db) {
     try { await db.auth.signOut(); } catch (e) {}
   }
@@ -83,6 +85,7 @@ function renderAdminShell() {
   ];
 
   const sidebarHTML = `
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
     <aside class="admin-sidebar" id="admin-sidebar">
       <div class="sidebar-header">
         <img src="../assets/images/logo.png" alt="SV Elegant Interior">
@@ -97,7 +100,7 @@ function renderAdminShell() {
         ${navItems.map(item => {
           const isActive = currentPath.endsWith(item.url) || (item.url === 'index.html' && currentPath.endsWith('/admin/'));
           return `
-            <a href="${item.url}" class="nav-item ${isActive ? 'active' : ''}">
+            <a href="${item.url}" class="nav-item ${isActive ? 'active' : ''}" onclick="closeMobileSidebar()">
               <div class="nav-left">
                 <i class="${item.icon}"></i>
                 <span>${item.name}</span>
@@ -113,7 +116,7 @@ function renderAdminShell() {
           <div class="user-avatar">${(window.currentAdminUser?.email || 'A')[0].toUpperCase()}</div>
           <div class="user-details">
             <h5>Admin User</h5>
-            <span>${window.currentAdminUser?.email || 'admin@sveinterior.com'}</span>
+            <span>${window.currentAdminUser?.email || 'admin@svelegantinteriors.com'}</span>
           </div>
         </div>
         <button class="btn-logout" onclick="handleAdminLogout()" title="Logout">
@@ -158,12 +161,21 @@ function renderAdminShell() {
 // Toggle mobile sidebar drawer
 function toggleMobileSidebar() {
   const sidebar = document.getElementById('admin-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
   if (sidebar) sidebar.classList.toggle('open');
+  if (backdrop) backdrop.classList.toggle('active');
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.getElementById('admin-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (sidebar) sidebar.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('active');
 }
 
 // Update unread quote request count badge in sidebar
 async function updateUnreadCountBadge() {
-  const db = window.supabaseClient;
+  const db = getSupabaseClient();
   if (!db) return;
 
   try {
@@ -247,3 +259,4 @@ function closeConfirmModal() {
   const modal = document.getElementById('admin-confirm-modal');
   if (modal) modal.classList.remove('active');
 }
+

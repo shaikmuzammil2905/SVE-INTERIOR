@@ -148,7 +148,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       // Fetch Dashboard Real Database Numbers
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -159,6 +159,9 @@
           db.from('testimonials').select('*', { count: 'exact' }),
           db.from('contact_requests').select('*', { count: 'exact' }).order('created_at', { ascending: false })
         ]);
+
+        if (servicesRes.error) console.error('Services count error:', servicesRes.error);
+        if (projectsRes.error) console.error('Projects count error:', projectsRes.error);
 
         document.getElementById('stat-services-count').textContent = servicesRes.count || 0;
         document.getElementById('stat-projects-count').textContent = projectsRes.count || 0;
@@ -202,9 +205,9 @@
         } else {
           projTbody.innerHTML = recentProjects.map(p => `
             <tr>
-              <td><img src="${p.featured_image.startsWith('http') || p.featured_image.startsWith('assets') ? p.featured_image : '../' + p.featured_image}" class="table-img" alt="${p.title}"></td>
+              <td><img src="${p.featured_image ? (p.featured_image.startsWith('http') || p.featured_image.startsWith('assets') ? p.featured_image : '../' + p.featured_image) : '../assets/images/hero1.png'}" class="table-img" alt="${p.title}"></td>
               <td><strong>${p.title}</strong></td>
-              <td>${p.category_name}</td>
+              <td>${p.category_name || 'General'}</td>
               <td>${p.location || 'Hyderabad'}</td>
               <td><span class="badge ${p.is_published ? 'badge-success' : 'badge-secondary'}">${p.is_published ? 'Published' : 'Hidden'}</span></td>
             </tr>

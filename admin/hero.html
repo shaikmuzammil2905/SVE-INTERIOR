@@ -148,7 +148,7 @@
     document.addEventListener('DOMContentLoaded', loadHeroSlides);
 
     async function loadHeroSlides() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -283,7 +283,12 @@
         return;
       }
 
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
+      if (!db) {
+        showAdminToast('Database client connection error.', 'error');
+        return;
+      }
+
       const payload = {
         headline, subheading, description, primary_btn_text, primary_btn_url,
         secondary_btn_text, secondary_btn_url, display_order, is_published,
@@ -292,16 +297,18 @@
 
       try {
         if (id) {
-          await db.from('hero_slides').update(payload).eq('id', id);
+          const { error } = await db.from('hero_slides').update(payload).eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Updated Hero Slide', 'Hero Section', id, headline);
           showAdminToast('Hero slide updated successfully!', 'success');
         } else {
-          await db.from('hero_slides').insert([payload]);
+          const { error } = await db.from('hero_slides').insert([payload]);
+          if (error) throw error;
           await logAdminActivity('Added Hero Slide', 'Hero Section', null, headline);
           showAdminToast('New hero slide created!', 'success');
         }
         closeHeroModal();
-        loadHeroSlides();
+        await loadHeroSlides();
       } catch (err) {
         showAdminToast('Failed to save slide: ' + err.message, 'error');
       }
@@ -309,12 +316,14 @@
 
     function deleteHeroSlide(id) {
       confirmAction('Delete Hero Slide', 'Are you sure you want to remove this slide? It will disappear from the home page.', async () => {
-        const db = window.supabaseClient;
+        const db = getSupabaseClient();
+        if (!db) return;
         try {
-          await db.from('hero_slides').delete().eq('id', id);
+          const { error } = await db.from('hero_slides').delete().eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Deleted Hero Slide', 'Hero Section', id, '');
           showAdminToast('Hero slide deleted!', 'success');
-          loadHeroSlides();
+          await loadHeroSlides();
         } catch (e) {
           showAdminToast('Error deleting slide: ' + e.message, 'error');
         }

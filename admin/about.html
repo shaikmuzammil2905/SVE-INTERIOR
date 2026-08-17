@@ -96,7 +96,7 @@
     document.addEventListener('DOMContentLoaded', loadAboutSection);
 
     async function loadAboutSection() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -181,7 +181,12 @@
         return;
       }
 
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
+      if (!db) {
+        showAdminToast('Database client connection error.', 'error');
+        return;
+      }
+
       const payload = {
         heading, main_description, mission, vision, company_description,
         button_text, button_url, image_url, cloudinary_public_id
@@ -189,12 +194,15 @@
 
       try {
         if (id) {
-          await db.from('about_section').update(payload).eq('id', id);
+          const { error } = await db.from('about_section').update(payload).eq('id', id);
+          if (error) throw error;
         } else {
-          await db.from('about_section').insert([payload]);
+          const { error } = await db.from('about_section').insert([payload]);
+          if (error) throw error;
         }
         await logAdminActivity('Updated About Section', 'About', id, heading);
         showAdminToast('About Section changes saved successfully!', 'success');
+        await loadAboutSection();
       } catch (e) {
         showAdminToast('Failed to save changes: ' + e.message, 'error');
       }

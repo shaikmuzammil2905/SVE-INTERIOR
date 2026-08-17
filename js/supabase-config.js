@@ -14,9 +14,16 @@ const CLOUDINARY_CONFIG = {
 // Initialize Supabase JS Client
 let db = null;
 
+function getSupabaseClient() {
+  if (!db && window.supabase) {
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window.supabaseClient = db;
+  }
+  return db || window.supabaseClient;
+}
+
 if (window.supabase) {
-  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  window.supabaseClient = db;
+  getSupabaseClient();
 } else {
   console.warn('Supabase SDK script not loaded yet. Waiting for script initialization...');
 }
@@ -73,9 +80,10 @@ async function uploadToCloudinary(file, folder = 'sve-interior', onProgress = nu
 
 // Save uploaded media metadata to Supabase media_assets table
 async function saveMediaAssetRecord(res, folder) {
-  if (!db) return;
+  const client = getSupabaseClient();
+  if (!client) return;
   try {
-    await db.from('media_assets').upsert({
+    await client.from('media_assets').upsert({
       file_name: res.original_filename || 'asset',
       secure_url: res.secure_url,
       cloudinary_public_id: res.public_id,
@@ -93,10 +101,23 @@ async function saveMediaAssetRecord(res, folder) {
 
 // Log admin action to activity_logs table
 async function logAdminActivity(action, module, recordId = null, details = '') {
-  if (!db) return;
+  const client = getSupabaseClient();
+  if (!client) return;
   try {
-    const user = (await db.auth.getUser())?.data?.user;
+    const user = (await client.auth.getUser())?.data?.user;
     const adminEmail = user?.email || 'admin@svelegantinteriors.com';
+
+    await client.from('activity_logs').insert([{
+      admin_email: adminEmail,
+      action: action,
+      module: module,
+      record_id: recordId ? String(recordId) : null,
+      details: details
+    }]);
+  } catch (err) {
+    console.error('Error logging activity:', err);
+  }
+}
 
     await db.from('activity_logs').insert([{
       admin_email: adminEmail,

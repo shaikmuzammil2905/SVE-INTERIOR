@@ -75,7 +75,7 @@
     document.addEventListener('DOMContentLoaded', loadActivityLogs);
 
     async function loadActivityLogs() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {

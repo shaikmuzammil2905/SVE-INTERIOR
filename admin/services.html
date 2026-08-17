@@ -185,7 +185,7 @@
     document.addEventListener('DOMContentLoaded', loadServicesCatalog);
 
     async function loadServicesCatalog() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -350,7 +350,12 @@
         return;
       }
 
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
+      if (!db) {
+        showAdminToast('Database client connection error.', 'error');
+        return;
+      }
+
       const payload = {
         name, slug, category, icon_class, short_description, full_description,
         display_order, is_published, is_featured, image_url, cloudinary_public_id
@@ -358,16 +363,18 @@
 
       try {
         if (id) {
-          await db.from('services').update(payload).eq('id', id);
+          const { error } = await db.from('services').update(payload).eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Updated Service', 'Services', id, name);
           showAdminToast('Service updated successfully!', 'success');
         } else {
-          await db.from('services').insert([payload]);
+          const { error } = await db.from('services').insert([payload]);
+          if (error) throw error;
           await logAdminActivity('Created Service', 'Services', null, name);
           showAdminToast('New service added!', 'success');
         }
         closeServiceModal();
-        loadServicesCatalog();
+        await loadServicesCatalog();
       } catch (err) {
         showAdminToast('Failed to save service: ' + err.message, 'error');
       }
@@ -376,12 +383,14 @@
     function deleteService(id) {
       const srv = servicesList.find(s => s.id === id);
       confirmAction('Delete Service', `Are you sure you want to permanently delete "${srv?.name || 'this service'}"? It will be removed immediately from the public website!`, async () => {
-        const db = window.supabaseClient;
+        const db = getSupabaseClient();
+        if (!db) return;
         try {
-          await db.from('services').delete().eq('id', id);
+          const { error } = await db.from('services').delete().eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Deleted Service', 'Services', id, srv?.name || '');
           showAdminToast('Service deleted from database & public site!', 'success');
-          loadServicesCatalog();
+          await loadServicesCatalog();
         } catch (e) {
           showAdminToast('Failed to delete service: ' + e.message, 'error');
         }

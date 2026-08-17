@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* --- 1. Master Supabase Synchronization --- */
 async function syncPublicDataFromSupabase() {
-  const db = window.supabaseClient;
+  const db = getSupabaseClient();
   if (!db) return;
 
   try {
@@ -172,22 +172,45 @@ async function syncPublicDataFromSupabase() {
       db.from('testimonials').select('*').eq('is_published', true).order('display_order', { ascending: true })
     ]);
 
-    // Use Supabase data if available, otherwise fallback
-    PUBLIC_SERVICES = (servicesRes.data && servicesRes.data.length > 0) ? servicesRes.data : FALLBACK_SERVICES;
-    PUBLIC_PROJECTS = (projectsRes.data && projectsRes.data.length > 0) ? projectsRes.data : FALLBACK_PROJECTS;
-    PUBLIC_GALLERY = (galleryRes.data && galleryRes.data.length > 0) ? galleryRes.data : FALLBACK_GALLERY_IMAGES;
+    // Use Supabase data whenever query succeeds without error
+    if (!servicesRes.error && Array.isArray(servicesRes.data)) {
+      PUBLIC_SERVICES = servicesRes.data;
+      renderServicesSection(PUBLIC_SERVICES);
+    }
 
-    renderSiteSettings(settingsRes.data);
-    if (heroRes.data && heroRes.data.length > 0) renderHeroSlider(heroRes.data);
-    if (aboutRes.data) renderAboutSection(aboutRes.data);
+    if (!projectsRes.error && Array.isArray(projectsRes.data)) {
+      PUBLIC_PROJECTS = projectsRes.data;
+      renderProjectsSection(PUBLIC_PROJECTS);
+    }
 
-    renderServicesSection(PUBLIC_SERVICES);
-    renderProjectsSection(PUBLIC_PROJECTS);
-    renderGallerySection(PUBLIC_GALLERY);
+    if (!galleryRes.error && Array.isArray(galleryRes.data)) {
+      PUBLIC_GALLERY = galleryRes.data;
+      renderGallerySection(PUBLIC_GALLERY);
+    }
 
-    if (baRes.data) renderBeforeAfterSection(baRes.data);
-    if (wcuRes.data && wcuRes.data.length > 0) renderWhyChooseUsSection(wcuRes.data);
-    if (testRes.data && testRes.data.length > 0) renderTestimonialsSection(testRes.data);
+    if (!settingsRes.error && settingsRes.data) {
+      renderSiteSettings(settingsRes.data);
+    }
+
+    if (!heroRes.error && Array.isArray(heroRes.data) && heroRes.data.length > 0) {
+      renderHeroSlider(heroRes.data);
+    }
+
+    if (!aboutRes.error && aboutRes.data) {
+      renderAboutSection(aboutRes.data);
+    }
+
+    if (!baRes.error && baRes.data) {
+      renderBeforeAfterSection(baRes.data);
+    }
+
+    if (!wcuRes.error && Array.isArray(wcuRes.data) && wcuRes.data.length > 0) {
+      renderWhyChooseUsSection(wcuRes.data);
+    }
+
+    if (!testRes.error && Array.isArray(testRes.data) && testRes.data.length > 0) {
+      renderTestimonialsSection(testRes.data);
+    }
 
     initServicePage();
 
@@ -603,7 +626,7 @@ function initContactForm() {
         return;
       }
 
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (db) {
         try {
           await db.from('contact_requests').insert([{

@@ -64,7 +64,7 @@
     document.addEventListener('DOMContentLoaded', loadMediaAssets);
 
     async function loadMediaAssets() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -130,7 +130,7 @@
 
         await logAdminActivity('Uploaded Media Asset', 'Media Library', null, file.name);
         showAdminToast('File uploaded to Cloudinary & saved to Media Library!', 'success');
-        loadMediaAssets();
+        await loadMediaAssets();
       } catch (err) {
         showAdminToast('Upload failed: ' + err.message, 'error');
       } finally {
@@ -149,12 +149,14 @@
     function deleteMediaAsset(id) {
       const asset = mediaList.find(m => m.id === id);
       confirmAction('Delete Cloudinary Asset', `Are you sure you want to delete "${asset?.file_name || 'this media'}"?`, async () => {
-        const db = window.supabaseClient;
+        const db = getSupabaseClient();
+        if (!db) return;
         try {
-          await db.from('media_assets').delete().eq('id', id);
+          const { error } = await db.from('media_assets').delete().eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Deleted Media Asset', 'Media Library', id, asset?.file_name || '');
           showAdminToast('Asset removed from library!', 'success');
-          loadMediaAssets();
+          await loadMediaAssets();
         } catch (e) {
           showAdminToast('Failed to delete asset: ' + e.message, 'error');
         }

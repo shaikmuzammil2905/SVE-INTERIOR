@@ -112,20 +112,14 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      const db = window.supabaseClient;
-      let sessionActive = false;
-
+      const db = getSupabaseClient();
       if (db) {
         try {
           const { data: { session } } = await db.auth.getSession();
-          if (session) sessionActive = true;
+          if (session && session.user) {
+            window.location.href = 'index.html';
+          }
         } catch (e) {}
-      }
-
-      if (localStorage.getItem('sve_admin_session')) sessionActive = true;
-
-      if (sessionActive && window.location.pathname.endsWith('login.html')) {
-        window.location.href = 'index.html';
       }
     });
 
@@ -133,33 +127,60 @@
       e.preventDefault();
       const emailInput = document.getElementById('admin-email');
       const passInput = document.getElementById('admin-password');
-      const email = emailInput ? emailInput.value.trim() : 'admin@svelegantinteriors.com';
+      const email = emailInput ? emailInput.value.trim() : '';
       const password = passInput ? passInput.value.trim() : '';
       const submitBtn = document.getElementById('login-submit-btn');
 
+      if (!email || !password) {
+        showAdminToast('Please enter both admin email and password.', 'error');
+        return;
+      }
+
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Authenticating...`;
+        submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Authenticating with Supabase...`;
       }
 
-      // Store local admin session instantly
-      localStorage.setItem('sve_admin_session', JSON.stringify({ email: email || 'admin@svelegantinteriors.com', time: Date.now() }));
+      const db = getSupabaseClient();
+      if (!db) {
+        showAdminToast('Database client connection error. Please refresh.', 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
+        }
+        return;
+      }
 
-      const db = window.supabaseClient;
-      if (db) {
-        try {
-          const { data, error } = await db.auth.signInWithPassword({ email, password });
-          if (error) {
-            await db.auth.signUp({ email, password });
+      try {
+        const { data, error } = await db.auth.signInWithPassword({ email, password });
+        if (error) {
+          showAdminToast('Authentication failed: ' + error.message, 'error');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
           }
-        } catch (err) {}
+          return;
+        }
+
+        if (data && data.session) {
+          showAdminToast('Welcome Admin! Redirecting to Dashboard...', 'success');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 400);
+        } else {
+          showAdminToast('Login error: Session could not be established.', 'error');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
+          }
+        }
+      } catch (err) {
+        showAdminToast('Login error: ' + (err.message || 'Authentication failed'), 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In to Dashboard`;
+        }
       }
-
-      showAdminToast('Welcome Admin! Redirecting...', 'success');
-
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 300);
     });
 
     function openForgotModal() {
@@ -178,7 +199,7 @@
       }
 
       try {
-        const db = window.supabaseClient;
+        const db = getSupabaseClient();
         const { error } = await db.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/admin/login.html`
         });

@@ -115,7 +115,7 @@
     document.addEventListener('DOMContentLoaded', loadTestimonials);
 
     async function loadTestimonials() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -188,21 +188,28 @@
         return;
       }
 
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
+      if (!db) {
+        showAdminToast('Database client connection error.', 'error');
+        return;
+      }
+
       const payload = { client_name, location, testimonial_text, rating, display_order, is_published };
 
       try {
         if (id) {
-          await db.from('testimonials').update(payload).eq('id', id);
+          const { error } = await db.from('testimonials').update(payload).eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Updated Testimonial', 'Testimonials', id, client_name);
           showAdminToast('Testimonial updated!', 'success');
         } else {
-          await db.from('testimonials').insert([payload]);
+          const { error } = await db.from('testimonials').insert([payload]);
+          if (error) throw error;
           await logAdminActivity('Added Testimonial', 'Testimonials', null, client_name);
           showAdminToast('New testimonial created!', 'success');
         }
         closeTestimonialModal();
-        loadTestimonials();
+        await loadTestimonials();
       } catch (err) {
         showAdminToast('Failed to save testimonial: ' + err.message, 'error');
       }
@@ -211,12 +218,14 @@
     function deleteTestimonial(id) {
       const t = testimonialsList.find(item => item.id === id);
       confirmAction('Delete Testimonial', `Are you sure you want to delete testimonial from "${t?.client_name || 'this client'}"?`, async () => {
-        const db = window.supabaseClient;
+        const db = getSupabaseClient();
+        if (!db) return;
         try {
-          await db.from('testimonials').delete().eq('id', id);
+          const { error } = await db.from('testimonials').delete().eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Deleted Testimonial', 'Testimonials', id, t?.client_name || '');
           showAdminToast('Testimonial deleted!', 'success');
-          loadTestimonials();
+          await loadTestimonials();
         } catch (e) {
           showAdminToast('Failed to delete: ' + e.message, 'error');
         }

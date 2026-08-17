@@ -193,7 +193,7 @@
     document.addEventListener('DOMContentLoaded', loadProjectsCatalog);
 
     async function loadProjectsCatalog() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -360,7 +360,12 @@
         return;
       }
 
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
+      if (!db) {
+        showAdminToast('Database client connection error.', 'error');
+        return;
+      }
+
       const payload = {
         title, slug, category_name, location, project_type, completion_date,
         description, display_order, is_published, is_featured, featured_image, cloudinary_public_id
@@ -368,16 +373,18 @@
 
       try {
         if (id) {
-          await db.from('projects').update(payload).eq('id', id);
+          const { error } = await db.from('projects').update(payload).eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Updated Project', 'Projects', id, title);
           showAdminToast('Project updated successfully!', 'success');
         } else {
-          await db.from('projects').insert([payload]);
+          const { error } = await db.from('projects').insert([payload]);
+          if (error) throw error;
           await logAdminActivity('Created Project', 'Projects', null, title);
           showAdminToast('New project created!', 'success');
         }
         closeProjectModal();
-        loadProjectsCatalog();
+        await loadProjectsCatalog();
       } catch (err) {
         showAdminToast('Failed to save project: ' + err.message, 'error');
       }
@@ -386,12 +393,14 @@
     function deleteProject(id) {
       const prj = projectsList.find(p => p.id === id);
       confirmAction('Delete Project', `Are you sure you want to permanently delete "${prj?.title || 'this project'}"? It will disappear from the public gallery immediately!`, async () => {
-        const db = window.supabaseClient;
+        const db = getSupabaseClient();
+        if (!db) return;
         try {
-          await db.from('projects').delete().eq('id', id);
+          const { error } = await db.from('projects').delete().eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Deleted Project', 'Projects', id, prj?.title || '');
           showAdminToast('Project deleted from database & public website!', 'success');
-          loadProjectsCatalog();
+          await loadProjectsCatalog();
         } catch (e) {
           showAdminToast('Failed to delete project: ' + e.message, 'error');
         }

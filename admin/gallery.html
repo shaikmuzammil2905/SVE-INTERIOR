@@ -136,7 +136,7 @@
     document.addEventListener('DOMContentLoaded', loadGalleryCatalog);
 
     async function loadGalleryCatalog() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -276,23 +276,30 @@
         return;
       }
 
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
+      if (!db) {
+        showAdminToast('Database client connection error.', 'error');
+        return;
+      }
+
       const payload = {
         title, category, display_order, is_published, image_url, cloudinary_public_id
       };
 
       try {
         if (id) {
-          await db.from('gallery').update(payload).eq('id', id);
+          const { error } = await db.from('gallery').update(payload).eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Updated Gallery Image', 'Gallery', id, title);
           showAdminToast('Gallery item updated!', 'success');
         } else {
-          await db.from('gallery').insert([payload]);
+          const { error } = await db.from('gallery').insert([payload]);
+          if (error) throw error;
           await logAdminActivity('Uploaded Gallery Image', 'Gallery', null, title);
           showAdminToast('New gallery item added!', 'success');
         }
         closeGalleryModal();
-        loadGalleryCatalog();
+        await loadGalleryCatalog();
       } catch (err) {
         showAdminToast('Failed to save gallery item: ' + err.message, 'error');
       }
@@ -301,12 +308,14 @@
     function deleteGalleryItem(id) {
       const item = galleryList.find(i => i.id === id);
       confirmAction('Delete Gallery Asset', `Are you sure you want to delete "${item?.title || 'this media'}"? This will delete the database record and remove it from the public website!`, async () => {
-        const db = window.supabaseClient;
+        const db = getSupabaseClient();
+        if (!db) return;
         try {
-          await db.from('gallery').delete().eq('id', id);
+          const { error } = await db.from('gallery').delete().eq('id', id);
+          if (error) throw error;
           await logAdminActivity('Deleted Gallery Asset', 'Gallery', id, item?.title || '');
           showAdminToast('Gallery image deleted from database & public site!', 'success');
-          loadGalleryCatalog();
+          await loadGalleryCatalog();
         } catch (e) {
           showAdminToast('Failed to delete media: ' + e.message, 'error');
         }

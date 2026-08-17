@@ -142,7 +142,7 @@
     document.addEventListener('DOMContentLoaded', loadSiteSettings);
 
     async function loadSiteSettings() {
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
       if (!db) return;
 
       try {
@@ -190,7 +190,12 @@
       const copyright_text = document.getElementById('set-copyright').value.trim();
       const consultation_btn_text = document.getElementById('set-cta-btn').value.trim();
 
-      const db = window.supabaseClient;
+      const db = getSupabaseClient();
+      if (!db) {
+        showAdminToast('Database client connection error.', 'error');
+        return;
+      }
+
       const payload = {
         company_name, phone, whatsapp, email, address, google_maps_url,
         instagram_url, facebook_url, youtube_url, linkedin_url,
@@ -200,12 +205,15 @@
 
       try {
         if (id) {
-          await db.from('site_settings').update(payload).eq('id', id);
+          const { error } = await db.from('site_settings').update(payload).eq('id', id);
+          if (error) throw error;
         } else {
-          await db.from('site_settings').insert([payload]);
+          const { error } = await db.from('site_settings').insert([payload]);
+          if (error) throw error;
         }
         await logAdminActivity('Updated Website Settings', 'Settings', id, company_name);
         showAdminToast('Website settings updated successfully!', 'success');
+        await loadSiteSettings();
       } catch (e) {
         showAdminToast('Failed to save settings: ' + e.message, 'error');
       }
