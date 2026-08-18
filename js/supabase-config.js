@@ -7,7 +7,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const CLOUDINARY_CONFIG = {
   cloudName: 'dn2l3pe4',
-  uploadPreset: 'ml_default',
+  uploadPreset: 'ojxilmd0',
   uploadUrl: 'https://api.cloudinary.com/v1_1/dn2l3pe4/auto/upload'
 };
 
@@ -28,13 +28,15 @@ if (window.supabase) {
   console.warn('Supabase SDK script not loaded yet. Waiting for script initialization...');
 }
 
-// Utility: Cloudinary Direct Upload with Progress Tracking
-async function uploadToCloudinary(file, folder = 'sve-interior', onProgress = null) {
+// Utility: Cloudinary Direct Upload with Progress Tracking & Automatic Fallback
+async function uploadToCloudinary(file, folder = 'sve-interior', onProgress = null, presetOverride = null) {
   if (!file) throw new Error('No file provided for upload.');
+
+  const presetToUse = presetOverride || CLOUDINARY_CONFIG.uploadPreset;
 
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
+  formData.append('upload_preset', presetToUse);
   formData.append('folder', folder);
 
   return new Promise((resolve, reject) => {
@@ -50,7 +52,7 @@ async function uploadToCloudinary(file, folder = 'sve-interior', onProgress = nu
       };
     }
 
-    xhr.onload = () => {
+    xhr.onload = async () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         const response = JSON.parse(xhr.responseText);
         saveMediaAssetRecord(response, folder);
@@ -69,6 +71,19 @@ async function uploadToCloudinary(file, folder = 'sve-interior', onProgress = nu
           const errRes = JSON.parse(xhr.responseText);
           if (errRes.error && errRes.error.message) errMessage = errRes.error.message;
         } catch (e) {}
+
+        // If primary preset fails due to unsigned preset restriction/whitelisting, retry automatically with fallback preset
+        const fallbackPreset = presetToUse === 'ojxilmd0' ? 'ml_default' : 'ojxilmd0';
+        if (!presetOverride && (errMessage.toLowerCase().includes('preset') || errMessage.toLowerCase().includes('unsigned') || errMessage.toLowerCase().includes('whitelist'))) {
+          console.warn(`Cloudinary upload with preset "${presetToUse}" returned error. Retrying with fallback preset "${fallbackPreset}"...`);
+          try {
+            const res = await uploadToCloudinary(file, folder, onProgress, fallbackPreset);
+            return resolve(res);
+          } catch (retryErr) {
+            return reject(retryErr);
+          }
+        }
+
         reject(new Error(errMessage));
       }
     };
