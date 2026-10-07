@@ -1,0 +1,36 @@
+# SV Elegant Interiors - Apache Configuration
+
+# Set default index documents
+DirectoryIndex index.html index.htm index.php
+
+# Prevent directory listings while allowing symlinks
+Options -Indexes +FollowSymLinks
+
+# Grant global access to static assets & html
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+</IfModule>
+
+# URL Rewriting & Clean routing
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Ensure /admin routes to /admin/index.html or /admin/login.html
+    RewriteRule ^admin/?$ /admin/index.html [L,QSA]
+    RewriteRule ^admin/login/?$ /admin/login.html [L,QSA]
+</IfModule>
+
+# Custom Error Pages Fallback
+ErrorDocument 404 /index.html
+ErrorDocument 403 /index.html
+
+# Security Headers & Proper MIME types
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>

@@ -1,0 +1,17 @@
+# Environment variables
+.env
+.env.local
+
+# Archives and build artifacts
+*.zip
+*.tar.gz
+*.rar
+website-dist.zip
+
+# OS Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
