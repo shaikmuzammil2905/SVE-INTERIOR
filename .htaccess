@@ -1,18 +1,21 @@
-# SV Elegant Interiors - Apache Configuration
+# SV Elegant Interiors - Apache Production Configuration
 
-# Set default index documents
+# Default index file
 DirectoryIndex index.html index.htm index.php
 
-# Prevent directory listings while allowing symlinks
-Options -Indexes +FollowSymLinks
+# Prevent directory listings
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
 
-# Grant global access to static assets & html
+# Follow Symlinks safely without triggering 'Option FollowSymLinks not allowed' 403 error
+<IfModule mod_core.c>
+    Options -Indexes +SymLinksIfOwnerMatch
+</IfModule>
+
+# Grant public read access
 <IfModule mod_authz_core.c>
     Require all granted
-</IfModule>
-<IfModule !mod_authz_core.c>
-    Order allow,deny
-    Allow from all
 </IfModule>
 
 # URL Rewriting & Clean routing
@@ -25,11 +28,20 @@ Options -Indexes +FollowSymLinks
     RewriteRule ^admin/login/?$ /admin/login.html [L,QSA]
 </IfModule>
 
-# Custom Error Pages Fallback
+# Standard Error Handling (Do NOT route 403 to /index.html to avoid recursive 403 loop)
 ErrorDocument 404 /index.html
-ErrorDocument 403 /index.html
 
-# Security Headers & Proper MIME types
+# MIME Types & UTF-8 Encoding
+AddDefaultCharset UTF-8
+<IfModule mod_mime.c>
+    AddType text/html .html
+    AddType text/css .css
+    AddType application/javascript .js
+    AddType image/svg+xml .svg
+    AddType image/webp .webp
+</IfModule>
+
+# Security Headers
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
